@@ -340,12 +340,16 @@ const equals = (
 
 const clearEntry = (state: CalculatorState): CalculatorState => {
   if (state.error) return clearAll();
+  // After `=` the evaluated expression's operands/operators still linger; clear
+  // them first (like negate / percent / unary do) so CE starts a clean context
+  // instead of leaving 3 operands vs 1 operator and dropping the next operand.
+  const base = state.justEquals ? afterEquals(state) : state;
   return {
-    ...state,
+    ...base,
     entry: '0',
     overwrite: true,
     // Re-await the operand for a still-pending operator.
-    awaitingOperand: state.operators.length > 0,
+    awaitingOperand: base.operators.length > 0,
     justEquals: false,
     dirty: false,
   };
