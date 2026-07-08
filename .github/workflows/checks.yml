@@ -1,0 +1,27 @@
+name: Checks
+
+# Reusable workflow: the shared build + typecheck + test + lint gate. Called by
+# ci.yml (on PRs) and by deploy-demo.yml / release.yml (on push to main) so the
+# steps live in exactly one place instead of being copy-pasted across workflows.
+on:
+  workflow_call:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm lint
