@@ -23,12 +23,13 @@ jobs:
           version: 9.15.4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # OIDC trusted publishing needs npm >= 11.5.1. Node 24 bundles a new
+          # enough npm, so we avoid an in-place `npm i -g npm@latest` self-
+          # upgrade - that corrupts libnpmpublish's bundled `sigstore` dep and
+          # breaks provenance with "Cannot find module 'sigstore'".
+          node-version: 24
           cache: pnpm
           registry-url: https://registry.npmjs.org
-      # OIDC trusted publishing needs npm >= 11.5.1 (and Node >= 22.14).
-      - name: Update npm for OIDC trusted publishing
-        run: npm install -g npm@latest
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
       # Opens a "Version Packages" PR from accumulated changesets; when that PR
