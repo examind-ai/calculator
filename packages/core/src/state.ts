@@ -68,9 +68,31 @@ export const initialState: CalculatorState = {
   error: false,
 };
 
-// Trim binary float noise to ~12 significant figures: 0.1 + 0.2 -> "0.3".
-const formatNumber = (value: number): string =>
-  String(parseFloat(value.toPrecision(12)));
+// Cap typed entry at ~15 significant digits: past this a JS double cannot
+// represent the number precisely, so further digits are noise. Also bounds how
+// wide a *typed* value can ever get (the skin still auto-shrinks the font).
+const MAX_SIGNIFICANT_DIGITS = 15;
+
+// Count the significant digits already typed into an entry string: digits only
+// (sign and decimal point dropped), with leading zeros not counted. "0.00123"
+// -> 3, "100" -> 3, "0" -> 0.
+const significantDigitCount = (entry: string): number =>
+  entry.replace(/[^0-9]/g, '').replace(/^0+/, '').length;
+
+// Format a computed result for display, bounded so it never becomes an
+// unreadable 20+ digit fixed string:
+// - trims binary float noise to ~12 significant figures (0.1 + 0.2 -> "0.3");
+// - uses exponential notation for magnitudes outside [1e-6, 1e12], so a very
+//   large or very small result stays compact (1e+20, not 100000000000000000000).
+// Non-finite values are handled upstream (surfaced as Error) before reaching here.
+const formatNumber = (value: number): string => {
+  if (value === 0) return '0';
+  const rounded = Number(value.toPrecision(12));
+  const magnitude = Math.abs(rounded);
+  if (magnitude >= 1e12 || magnitude < 1e-6)
+    return rounded.toExponential();
+  return String(rounded);
+};
 
 // Render operators with their proper glyphs on the expression line
 // (x -> times, / -> divide, - -> minus); + is unchanged.
@@ -111,15 +133,24 @@ const digit = (
       dirty: true,
     };
 
-  const entry = state.overwrite
-    ? value
-    : state.entry === '0'
-      ? value
-      : state.entry + value;
+  // Starting a fresh entry (after an op / result) or replacing the leading 0.
+  if (state.overwrite || state.entry === '0')
+    return {
+      ...state,
+      entry: value,
+      overwrite: false,
+      awaitingOperand: false,
+      dirty: true,
+    };
+
+  // Appending: past the significant-digit cap the extra digit is noise, so
+  // ignore it (real calculators cap input too).
+  if (significantDigitCount(state.entry) >= MAX_SIGNIFICANT_DIGITS)
+    return state;
 
   return {
     ...state,
-    entry,
+    entry: state.entry + value,
     overwrite: false,
     awaitingOperand: false,
     dirty: true,
