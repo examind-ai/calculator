@@ -1,8 +1,7 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
+  # PRs only - pushes to main are validated by the deploy-demo `test` job.
   pull_request:
 
 jobs:
