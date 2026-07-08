@@ -149,6 +149,17 @@ describe('clear semantics', () => {
       '2',
     );
   });
+
+  it('CE after = starts fresh, not carrying the evaluated expression: 7 + 8 = CE 2 = -> 2', () => {
+    expect(display('7', '+', '8', '=', 'CE', '2', '=')).toBe('2');
+  });
+
+  it('CE after = drops the evaluated operands/operators so no operand is lost', () => {
+    const state = run('7', '+', '8', '=', 'CE');
+    expect(state.operands).toEqual([]);
+    expect(state.operators).toEqual([]);
+    expect(getExpression(run('7', '+', '8', '=', 'CE', '2'))).toBe('2');
+  });
 });
 
 describe('errors', () => {
