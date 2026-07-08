@@ -1,9 +1,14 @@
 {
   "name": "@examind/calculator-react",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Headless React binding for the calculator: useCalculator() hook (reducer wiring, keyboard mapping, display selectors). Bring your own UI.",
   "license": "MIT",
-  "keywords": ["calculator", "react", "hook", "headless"],
+  "keywords": [
+    "calculator",
+    "react",
+    "hook",
+    "headless"
+  ],
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -14,7 +19,9 @@
       "require": "./dist/index.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "publishConfig": {
     "access": "public"
