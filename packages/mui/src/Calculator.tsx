@@ -296,6 +296,7 @@ export const Calculator = ({
               key={key.testId}
               data-testid={key.testId}
               aria-label={ariaLabel}
+              variant="contained"
               color={buttonColor(key.variant)}
               onClick={() => dispatch(action)}
               sx={{
