@@ -3,6 +3,11 @@
   "version": "0.2.0",
   "description": "React + MUI skin for the EXAMIND calculator. Themeable (light/dark), keyboard + ARIA support.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/examind-ai/calculator.git",
+    "directory": "packages/mui"
+  },
   "keywords": [
     "calculator",
     "react",

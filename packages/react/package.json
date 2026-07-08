@@ -3,6 +3,11 @@
   "version": "0.1.1",
   "description": "Headless React binding for the calculator: useCalculator() hook (reducer wiring, keyboard mapping, display selectors). Bring your own UI.",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/examind-ai/calculator.git",
+    "directory": "packages/react"
+  },
   "keywords": [
     "calculator",
     "react",
