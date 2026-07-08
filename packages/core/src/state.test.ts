@@ -243,6 +243,54 @@ describe('non-finite results surface as Error', () => {
   });
 });
 
+describe('entry length cap (~15 significant digits)', () => {
+  it('accepts a full 15-digit entry', () => {
+    expect(display(...'123456789012345'.split(''))).toBe(
+      '123456789012345',
+    );
+  });
+
+  it('ignores the 16th digit', () => {
+    expect(display(...'1234567890123456'.split(''))).toBe(
+      '123456789012345',
+    );
+  });
+
+  it('does not count leading zeros toward the cap', () => {
+    // "0.000" + 15 significant digits is still accepted in full.
+    expect(
+      display('0', '.', '0', '0', '0', ...'123456789012345'.split('')),
+    ).toBe('0.000123456789012345');
+  });
+});
+
+describe('bounded result formatting', () => {
+  it('keeps a large product readable via exponential notation', () => {
+    // 99999999 x 99999999 = 9999999800000001, formatted to 12 sig figs.
+    expect(
+      display(...'99999999'.split(''), 'x', ...'99999999'.split(''), '='),
+    ).toBe('9.9999998e+15');
+  });
+
+  it('renders a very large repeated-square result as exponential', () => {
+    // 9 squared five times = 9^32 ~ 3.43e30.
+    expect(display('9', 'x^2', 'x^2', 'x^2', 'x^2', 'x^2')).toBe(
+      '3.43368382029e+30',
+    );
+  });
+
+  it('renders a very small reciprocal result as exponential', () => {
+    expect(display(...'99999999'.split(''), '1/x')).toBe(
+      '1.00000001e-8',
+    );
+  });
+
+  it('keeps mid-range values as plain fixed strings', () => {
+    expect(display('7', '+', '8', '=')).toBe('15');
+    expect(display('0', '.', '1', '+', '0', '.', '2', '=')).toBe('0.3');
+  });
+});
+
 describe('contextual clear key label (AC vs C)', () => {
   it('is AC when idle', () => {
     expect(getClearMode(initialState)).toBe('AC');

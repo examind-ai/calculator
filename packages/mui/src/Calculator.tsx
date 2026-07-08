@@ -1,3 +1,4 @@
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import {
   CalculatorAction,
@@ -199,6 +200,41 @@ const buttonColor = (variant: KeyVariant) => {
   return 'inherit';
 };
 
+// Base display font (rem) and the readable floor the auto-shrink stops at.
+const DISPLAY_BASE_FONT_REM = 2;
+const DISPLAY_MIN_FONT_REM = 0.75;
+
+// Auto-shrink the display font so the full value always fits its box - a
+// calculator must never clip or ellipsize a number. Short values keep the base
+// font; the shrink kicks in only when the value would otherwise overflow (e.g.
+// a long typed number or an exponential result). Structure only - no colors.
+const useAutoFitFont = (value: string): {
+  ref: React.RefObject<HTMLSpanElement>;
+  fontRem: number;
+} => {
+  const ref = useRef<HTMLSpanElement>(null);
+  const [fontRem, setFontRem] = useState(DISPLAY_BASE_FONT_REM);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Measure the natural width at the base font, independent of the last size.
+    el.style.fontSize = `${DISPLAY_BASE_FONT_REM}rem`;
+    const { scrollWidth, clientWidth } = el;
+    if (scrollWidth > clientWidth && clientWidth > 0) {
+      // Linear in font size (single nowrap line); a small safety factor keeps
+      // sub-pixel rounding from nudging it back over the edge.
+      const scaled =
+        (DISPLAY_BASE_FONT_REM * clientWidth * 0.98) / scrollWidth;
+      setFontRem(Math.max(DISPLAY_MIN_FONT_REM, scaled));
+    } else {
+      setFontRem(DISPLAY_BASE_FONT_REM);
+    }
+  }, [value]);
+
+  return { ref, fontRem };
+};
+
 export interface CalculatorProps {
   // Attach keyboard handling to the window so keys work without focusing the
   // widget. Defaults to true.
@@ -212,6 +248,9 @@ export const Calculator = ({
     useCalculator();
 
   useGlobalKeyboard(handleKey, globalKeyboard);
+
+  const { ref: displayRef, fontRem: displayFontRem } =
+    useAutoFitFont(display);
 
   return (
     <Paper
@@ -256,14 +295,14 @@ export const Calculator = ({
         <Typography
           data-testid="calculator-display"
           aria-live="polite"
+          ref={displayRef}
+          style={{ fontSize: `${displayFontRem}rem` }}
           sx={{
             color: 'text.primary',
-            fontSize: '2rem',
             fontWeight: 500,
             lineHeight: 1.2,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textOverflow: 'ellipsis',
           }}
         >
           {display}
