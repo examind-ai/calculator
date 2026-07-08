@@ -1,0 +1,26 @@
+{
+  "name": "@examind/calculator-core",
+  "version": "0.1.0",
+  "description": "Headless calculator engine: state machine + basic evaluator + eval-plugin interface. Zero dependencies, framework-agnostic.",
+  "license": "MIT",
+  "keywords": ["calculator", "state-machine", "evaluator", "headless"],
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "test": "vitest run"
+  }
+}
