@@ -55,6 +55,17 @@ const App = () => {
             A headless calculator engine with framework skins - the
             same core, any UI.
           </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            textAlign="center"
+            sx={{ maxWidth: 460 }}
+          >
+            The MUI skin has no colors of its own - it adopts the
+            surrounding MUI theme. This demo uses stock MUI defaults
+            (purple/blue); dropped into your app it takes on your
+            palette. Toggle the theme to see it recolor.
+          </Typography>
           <Link
             href="https://github.com/examind-ai/calculator"
             target="_blank"
@@ -81,7 +92,7 @@ const App = () => {
         >
           <Section
             title="@examind/calculator-mui"
-            subtitle="the MUI skin (keyboard enabled)"
+            subtitle="MUI skin - inherits your theme, keyboard enabled"
           >
             <Calculator />
           </Section>
