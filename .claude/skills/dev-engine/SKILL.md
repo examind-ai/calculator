@@ -93,6 +93,12 @@ PARK. Track each attempt (what failed, what you changed) for the PR + self-impro
 - **Unmet after 5 / cannot verify under stated conditions / needs out-of-scope edits** -> PARK:
   no PR; comment a clear diagnosis on the issue, remove the `ready-for-engine` label, stop.
 
+**Each run is fully self-contained and independent** (runs may execute in parallel). When you
+finish - PR opened or parked - **STOP**. Do NOT schedule self-check-ins, wake-ups, or session
+resumes, and do not rely on session persistence carrying to a later run. Watching a PR for CI
+results and review comments after it is open is OUT OF SCOPE for the implement run - a separate,
+stateless PR-review sweeper owns that.
+
 ## Self-improvement
 At the end of every run (PR or park), if you hit a *generalizable* lesson (a gotcha any future
 run would face), open or comment on a GitHub issue labeled **`dev-engine-skill`** in
