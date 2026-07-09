@@ -38,8 +38,8 @@ its source before re-checking the demo.
   consume `useCalculator()` from `calculator-react`.
 - Never use em / en dashes in code or docs - plain hyphens only.
 
-## Verify (gates for automated runs)
+## Dev engine
 
-- `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint` must all pass.
-- UI: `pnpm --filter demo dev` serves the demo (Vite, default port 5173); drive
-  headless Chromium against it to verify rendered behavior.
+The autonomous dev engine's per-repo contract (base branch, provision, bring-up,
+verify surface + selectors) lives in **`.claude/dev-engine.md`**. The engine's
+procedure is the generic `dev-engine` skill in the `claude-workspace` repo.
