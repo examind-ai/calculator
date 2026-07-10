@@ -139,10 +139,13 @@ const digit = (
     };
 
   // Starting a fresh entry (after an op / result) or replacing the leading 0.
-  if (state.overwrite || state.entry === '0')
+  // A negative-zero entry ('-0', reachable by backspacing a negated value) is
+  // collapsed like '0' but keeps its sign: '-0' + '3' -> '-3', not '-03'.
+  if (state.overwrite || state.entry === '0' || state.entry === '-0')
     return {
       ...state,
-      entry: value,
+      entry:
+        !state.overwrite && state.entry === '-0' ? '-' + value : value,
       overwrite: false,
       awaitingOperand: false,
       dirty: true,

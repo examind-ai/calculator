@@ -154,6 +154,20 @@ describe('negate and backspace', () => {
   it('backspace on 78 = 7', () => {
     expect(display('7', '8', 'back')).toBe('7');
   });
+
+  it('collapses a negative leading zero: 0 . 5 +/- back back 3 -> -3', () => {
+    expect(display('0', '.', '5', '+/-', 'back', 'back', '3')).toBe(
+      '-3',
+    );
+  });
+
+  it('positive leading zero still collapses: 0 then 5 -> 5', () => {
+    expect(display('0', '5')).toBe('5');
+  });
+
+  it("'-0.' still appends the digit: -0. + 3 -> -0.3", () => {
+    expect(display('0', '.', '5', '+/-', 'back', '3')).toBe('-0.3');
+  });
 });
 
 describe('clear semantics', () => {
