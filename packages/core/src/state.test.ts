@@ -257,6 +257,33 @@ describe('repeated = repeats the last operation (iPhone-style)', () => {
   });
 });
 
+describe('a unary / percent / negate on a result breaks the repeat chain', () => {
+  // A unary / percent / negate applied to a result clears the repeat fields, so
+  // a following `=` is a stable no-op - it never replays the pre-unary op one
+  // press late (the old stale-replay bug).
+  it('unary: 9 x 6 = sqrt = = -> 7.34846922835 at every =', () => {
+    expect(display('9', 'x', '6', '=', 'sqrt')).toBe('7.34846922835');
+    expect(display('9', 'x', '6', '=', 'sqrt', '=')).toBe(
+      '7.34846922835',
+    );
+    expect(display('9', 'x', '6', '=', 'sqrt', '=', '=')).toBe(
+      '7.34846922835',
+    );
+  });
+
+  it('negate: 7 + 8 = +/- = = -> -15 at every =', () => {
+    expect(display('7', '+', '8', '=', '+/-')).toBe('-15');
+    expect(display('7', '+', '8', '=', '+/-', '=')).toBe('-15');
+    expect(display('7', '+', '8', '=', '+/-', '=', '=')).toBe('-15');
+  });
+
+  it('percent: 9 x 6 = % = = -> 0.54 at every =', () => {
+    expect(display('9', 'x', '6', '=', '%')).toBe('0.54');
+    expect(display('9', 'x', '6', '=', '%', '=')).toBe('0.54');
+    expect(display('9', 'x', '6', '=', '%', '=', '=')).toBe('0.54');
+  });
+});
+
 describe('non-finite results surface as Error', () => {
   it('equals: an overflowing product -> Error', () => {
     expect(
