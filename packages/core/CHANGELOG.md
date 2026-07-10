@@ -1,5 +1,11 @@
 # @examind/calculator-core
 
+## 0.2.2
+
+### Patch Changes
+
+- 6f3366a: Negate (`±`) is now a no-op while awaiting an operand after a binary operator, so `5 +` then `±` keeps the display at `5` instead of wrongly flashing `-5` (matches iPhone). Results are unchanged.
+
 ## 0.2.1
 
 ### Patch Changes
