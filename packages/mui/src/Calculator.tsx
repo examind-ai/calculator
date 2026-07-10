@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import { Box, Button, Paper, Typography } from '@mui/material';
 import {
   CalculatorAction,
+  Evaluator,
   useCalculator,
   useGlobalKeyboard,
 } from '@examind/calculator-react';
@@ -239,13 +240,18 @@ export interface CalculatorProps {
   // Attach keyboard handling to the window so keys work without focusing the
   // widget. Defaults to true.
   globalKeyboard?: boolean;
+  // Swap the evaluation engine to change modes (financial / scientific / ...).
+  // The button grid stays the same shape; omit for basic arithmetic
+  // (`basicEvaluator`).
+  evaluator?: Evaluator;
 }
 
 export const Calculator = ({
   globalKeyboard = true,
+  evaluator,
 }: CalculatorProps = {}) => {
   const { display, expression, clearMode, dispatch, handleKey } =
-    useCalculator();
+    useCalculator(evaluator);
 
   useGlobalKeyboard(handleKey, globalKeyboard);
 

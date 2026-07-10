@@ -10,9 +10,23 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
-import Calculator from '@examind/calculator-mui';
+import Calculator, { Evaluator } from '@examind/calculator-mui';
+import { basicEvaluator } from '@examind/calculator-react';
 
 import BareSkin from './BareSkin';
+
+// A stand-in "mode" that proves the shipped skin routes evaluation through a
+// custom evaluator: x-squared returns a fixed sentinel (42) instead of v*v,
+// while everything else defers to basic arithmetic. Real modes (financial /
+// scientific) plug into the same `evaluator` seam.
+const SENTINEL_SQUARE = 42;
+const sentinelEvaluator: Evaluator = {
+  evaluate: basicEvaluator.evaluate,
+  applyUnary: (operator, value) =>
+    operator === 'square'
+      ? SENTINEL_SQUARE
+      : basicEvaluator.applyUnary(operator, value),
+};
 
 const Section = ({
   title,
@@ -101,6 +115,15 @@ const App = () => {
             subtitle="raw hook + plain HTML buttons - bring your own UI"
           >
             <BareSkin />
+          </Section>
+          <Section
+            title="custom evaluator"
+            subtitle="same MUI skin, a mode-swapped engine (x² -> 42)"
+          >
+            <Calculator
+              evaluator={sentinelEvaluator}
+              globalKeyboard={false}
+            />
           </Section>
         </Stack>
       </Box>
