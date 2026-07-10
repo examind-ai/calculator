@@ -1,5 +1,17 @@
 # @examind/calculator-mui
 
+## 0.3.0
+
+### Minor Changes
+
+- 39aab64: `Calculator` now accepts an optional `evaluator` prop that is passed through to `useCalculator`, so the shipped MUI skin can drive a custom mode (financial / scientific / ...) without rebuilding the button grid. Omitting the prop keeps `basicEvaluator`. The `Evaluator` type is now re-exported from `@examind/calculator-mui` for typing a custom evaluator.
+
+### Patch Changes
+
+- 5326edb: Build both packages with a `"use client"` banner (via tsup's `banner` option) so their `dist` entry files are marked as client modules. Imported from a Next.js App Router server component, they now establish a client boundary instead of failing with a confusing hooks-in-server-component error. Core is unchanged (no React, no directive).
+- Updated dependencies [5326edb]
+  - @examind/calculator-react@0.1.3
+
 ## 0.2.0
 
 ### Minor Changes
