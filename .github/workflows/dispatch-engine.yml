@@ -1,0 +1,38 @@
+name: Dispatch Dev Engine
+
+# When a human adds the `ready-for-engine` label to an issue or PR, fire the
+# "Dev Engine - calculator" cloud routine targeting that exact item. The routine
+# then implements the issue / addresses the PR's review comments (see the generic
+# dev-engine skill in claude-workspace + this repo's .claude/dev-engine.md).
+#
+# Event-driven (no polling), precise (passes the item number), and naturally
+# parallel (N labels -> N fires, each on its own item).
+
+on:
+  issues:
+    types: [labeled]
+  pull_request:
+    types: [labeled]
+
+jobs:
+  dispatch:
+    if: github.event.label.name == 'ready-for-engine'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Fire the Dev Engine routine
+        env:
+          # Per-routine API token (Settings -> Secrets -> Actions). Generate it
+          # at claude.ai/code/routines: Edit routine -> API trigger -> Generate token.
+          TOKEN: ${{ secrets.CLAUDE_ROUTINE_TOKEN }}
+          ROUTINE_ID: trig_019FYYg4d758FXud5JyWbDf9
+          KIND: ${{ github.event_name == 'pull_request' && 'PR' || 'issue' }}
+          NUMBER: ${{ github.event.issue.number || github.event.pull_request.number }}
+        run: |
+          curl -fsS -X POST \
+            "https://api.anthropic.com/v1/claude_code/routines/${ROUTINE_ID}/fire" \
+            -H "Authorization: Bearer ${TOKEN}" \
+            -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            -d "{\"text\": \"${KIND} #${NUMBER} in examind-ai/calculator was just labeled ready-for-engine. Work this exact item: ${KIND} #${NUMBER}.\"}"
