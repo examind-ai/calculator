@@ -36,6 +36,10 @@ export const keyToAction = (
       return { type: 'backspace' };
     case 'Escape':
       return { type: 'clear' };
+    // Windows "Standard" layout: the physical Delete key is CE (clear entry),
+    // distinct from Escape's clear-all.
+    case 'Delete':
+      return { type: 'clearEntry' };
     default:
       return null;
   }

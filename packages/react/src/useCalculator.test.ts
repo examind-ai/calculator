@@ -41,7 +41,14 @@ describe('keyToAction', () => {
     expect(keyToAction('Escape')).toEqual({ type: 'clear' });
   });
 
-  it.each(['a', 'F1', 'Delete', 'Shift', 'ArrowLeft', ' ', ''])(
+  // The Windows "Standard" layout the MUI skin follows: Escape clears all (AC),
+  // while the physical Delete key is CE (clear the current entry only).
+  it('maps "Delete" to clearEntry (CE), distinct from Escape', () => {
+    expect(keyToAction('Delete')).toEqual({ type: 'clearEntry' });
+    expect(keyToAction('Delete')).not.toEqual(keyToAction('Escape'));
+  });
+
+  it.each(['a', 'F1', 'Shift', 'ArrowLeft', ' ', ''])(
     'returns null for the unmapped key %o',
     key => {
       expect(keyToAction(key)).toBeNull();
