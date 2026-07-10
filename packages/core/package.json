@@ -1,6 +1,6 @@
 {
   "name": "@examind/calculator-core",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Headless calculator engine: state machine + basic evaluator + eval-plugin interface. Zero dependencies, framework-agnostic.",
   "license": "MIT",
   "repository": {

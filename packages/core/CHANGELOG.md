@@ -1,5 +1,11 @@
 # @examind/calculator-core
 
+## 0.2.4
+
+### Patch Changes
+
+- 63d7e6f: `digit()` now collapses a negative-zero entry (`-0`, reachable by backspacing a negated value) like a plain `0` while preserving the sign, so `-0` + `3` yields `-3` instead of the malformed `-03`.
+
 ## 0.2.3
 
 ### Patch Changes
