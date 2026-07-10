@@ -1,5 +1,16 @@
 # @examind/calculator-react
 
+## 0.2.0
+
+### Minor Changes
+
+- b6c70c2: `keyToAction` now maps the physical `Delete` key to `{ type: 'clearEntry' }`, matching the Windows "Standard" layout the MUI skin follows (Delete = CE / clear entry, distinct from Escape's clear-all). Any skin wiring `handleKey` - including the shipped MUI `Calculator` - now honors Delete without changes.
+
+### Patch Changes
+
+- Updated dependencies [4985006]
+  - @examind/calculator-core@0.2.3
+
 ## 0.1.3
 
 ### Patch Changes

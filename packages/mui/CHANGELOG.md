@@ -1,5 +1,12 @@
 # @examind/calculator-mui
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [b6c70c2]
+  - @examind/calculator-react@0.2.0
+
 ## 0.3.0
 
 ### Minor Changes
