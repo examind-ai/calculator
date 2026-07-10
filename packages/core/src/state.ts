@@ -257,6 +257,10 @@ const percent = (state: CalculatorState): CalculatorState => {
 };
 
 const negate = (state: CalculatorState): CalculatorState => {
+  // A binary operator is pending and no fresh operand has been typed yet, so
+  // `entry` still shows the committed left operand - negating it would be
+  // meaningless. No-op (matches iPhone: `5 + ±` stays `5`, never flashes `-5`).
+  if (state.awaitingOperand) return state;
   const base = state.justEquals ? afterEquals(state) : state;
   if (base.entry === '0' || base.entry === '0.') return base;
   const entry = base.entry.startsWith('-')

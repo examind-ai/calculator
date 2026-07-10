@@ -130,6 +130,27 @@ describe('negate and backspace', () => {
     expect(display('5', '+/-')).toBe('-5');
   });
 
+  it('+/- while awaiting an operand is a no-op: 5 + +/- stays 5', () => {
+    expect(display('5', '+', '+/-')).toBe('5');
+    expect(expression('5', '+', '+/-')).toBe('5 +');
+  });
+
+  it('the no-op negate does not disturb the pending op: 5 + +/- 3 = 8', () => {
+    expect(display('5', '+', '+/-', '3', '=')).toBe('8');
+  });
+
+  it('+/- negates a typed second operand: 5 + 3 +/- = -3', () => {
+    expect(display('5', '+', '3', '+/-')).toBe('-3');
+  });
+
+  it('+/- negates a result: 9 x 6 = +/- -> -54', () => {
+    expect(display('9', 'x', '6', '=', '+/-')).toBe('-54');
+  });
+
+  it('+/- on a fresh 0 is a no-op', () => {
+    expect(display('+/-')).toBe('0');
+  });
+
   it('backspace on 78 = 7', () => {
     expect(display('7', '8', 'back')).toBe('7');
   });
