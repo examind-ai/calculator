@@ -111,12 +111,17 @@ const currentValue = (state: CalculatorState): number =>
   Number(state.entry);
 
 // After `=`, the result becomes the seed for whatever comes next; clear the
-// old committed tokens so the new action starts from a clean slate.
+// old committed tokens so the new action starts from a clean slate. Also clear
+// the repeat fields: a unary / percent / negate applied to a result breaks the
+// repeat chain, so a following `=` is a stable no-op rather than replaying the
+// pre-unary operation one press late.
 const afterEquals = (state: CalculatorState): CalculatorState => ({
   ...state,
   operands: [],
   operators: [],
   justEquals: false,
+  repeatOperator: null,
+  repeatOperand: null,
 });
 
 const clearAll = (): CalculatorState => ({ ...initialState });
