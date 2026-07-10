@@ -1,5 +1,11 @@
 # @examind/calculator-react
 
+## 0.1.3
+
+### Patch Changes
+
+- 5326edb: Build both packages with a `"use client"` banner (via tsup's `banner` option) so their `dist` entry files are marked as client modules. Imported from a Next.js App Router server component, they now establish a client boundary instead of failing with a confusing hooks-in-server-component error. Core is unchanged (no React, no directive).
+
 ## 0.1.2
 
 ### Patch Changes
