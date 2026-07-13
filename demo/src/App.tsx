@@ -120,10 +120,7 @@ const App = () => {
             title="custom evaluator"
             subtitle="same MUI skin, a mode-swapped engine (x² -> 42)"
           >
-            <Calculator
-              evaluator={sentinelEvaluator}
-              globalKeyboard={false}
-            />
+            <Calculator evaluator={sentinelEvaluator} />
           </Section>
         </Stack>
       </Box>

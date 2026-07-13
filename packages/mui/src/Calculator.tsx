@@ -4,7 +4,6 @@ import {
   CalculatorAction,
   Evaluator,
   useCalculator,
-  useGlobalKeyboard,
 } from '@examind/calculator-react';
 
 // The skin: an EXAMIND-themed (MUI, light + dark) button grid over the
@@ -237,9 +236,11 @@ const useAutoFitFont = (value: string): {
 };
 
 export interface CalculatorProps {
-  // Attach keyboard handling to the window so keys work without focusing the
-  // widget. Defaults to true.
-  globalKeyboard?: boolean;
+  // Respond to the keyboard while focus is within the widget. Defaults to true.
+  // Focus-scoped (no page-level listener): an embedded calculator never
+  // swallows keystrokes meant for the surrounding page. Set false to turn the
+  // keyboard off entirely (on-screen buttons still work by click).
+  keyboard?: boolean;
   // Swap the evaluation engine to change modes (financial / scientific / ...).
   // The button grid stays the same shape; omit for basic arithmetic
   // (`basicEvaluator`).
@@ -247,13 +248,11 @@ export interface CalculatorProps {
 }
 
 export const Calculator = ({
-  globalKeyboard = true,
+  keyboard = true,
   evaluator,
 }: CalculatorProps = {}) => {
   const { display, expression, clearMode, dispatch, handleKey } =
     useCalculator(evaluator);
-
-  useGlobalKeyboard(handleKey, globalKeyboard);
 
   const { ref: displayRef, fontRem: displayFontRem } =
     useAutoFitFont(display);
@@ -270,6 +269,12 @@ export const Calculator = ({
       }}
       role="group"
       aria-label="calculator"
+      // Focus-scoped keyboard: the root is the sole keyboard-focus owner
+      // (grid buttons are tabIndex={-1}), so keys are handled here only while
+      // focus is within the widget - no page-level listener. When keyboard is
+      // off, the root is not focusable and no key handler is attached.
+      tabIndex={keyboard ? 0 : undefined}
+      onKeyDown={keyboard ? handleKey : undefined}
     >
       <Box
         sx={{
@@ -343,6 +348,10 @@ export const Calculator = ({
               aria-label={ariaLabel}
               variant="contained"
               color={buttonColor(key.variant)}
+              // Keep the root the sole keyboard-focus owner: buttons stay
+              // click-activatable but out of the tab order, so Enter/Space can
+              // never fire both a focused button and the root's key handler.
+              tabIndex={-1}
               onClick={() => dispatch(action)}
               sx={{
                 minWidth: 0,
