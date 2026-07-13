@@ -1,6 +1,6 @@
 {
   "name": "@examind/calculator-react",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Headless React binding for the calculator: useCalculator() hook (reducer wiring, keyboard mapping, display selectors). Bring your own UI.",
   "license": "MIT",
   "repository": {
