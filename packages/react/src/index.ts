@@ -7,8 +7,3 @@ export {
   keyToAction,
 } from './useCalculator';
 export type { UseCalculatorResult } from './useCalculator';
-export {
-  useGlobalKeyboard,
-  shouldIgnoreGlobalKey,
-} from './useGlobalKeyboard';
-export type { GlobalKeyGuardEvent } from './useGlobalKeyboard';
