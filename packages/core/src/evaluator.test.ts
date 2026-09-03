@@ -200,3 +200,47 @@ describe('basicEvaluator - errors', () => {
     expect(() => evaluate(vs(1), ['+'])).toThrow(TypeError);
   });
 });
+
+describe('basicEvaluator.paste', () => {
+  const paste = (text: string) => basicEvaluator.paste(text);
+
+  it.each([
+    ['1234', '1234'],
+    ['1,234,567.5', '1234567.5'],
+    ['  42  ', '42'],
+    ['-3', '-3'],
+    ['−3', '-3'],
+    ['+7', '7'],
+    ['$1,234.50', '1234.5'],
+    ['.5', '0.5'],
+    ['5.', '5'],
+    ['1.5e-7', '0.00000015'],
+    ['1E3', '1000'],
+    ['0.1', '0.1'],
+  ])('accepts %j -> %j', (text, expected) => {
+    expect(paste(text)).toBe(expected);
+  });
+
+  it('rounds to the display precision instead of truncating', () => {
+    expect(paste('3.14159265358979323846')).toBe('3.14159265358979');
+    // 17 integer digits keep their magnitude.
+    expect(paste('12345678901234567')).toBe('12345678901234600');
+  });
+
+  it.each([
+    '',
+    '   ',
+    'abc',
+    '12abc',
+    '1.2.3',
+    '1 + 2',
+    '1,2,3.4.5',
+    '--5',
+    'NaN',
+    'Infinity',
+    '1e',
+    '1e5e5',
+  ])('rejects %j', text => {
+    expect(() => paste(text)).toThrow('Error');
+  });
+});
