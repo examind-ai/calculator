@@ -11,23 +11,9 @@ import {
   Typography,
   createTheme,
 } from '@mui/material';
-import Calculator, { Evaluator } from '@examind/calculator-mui';
-import { basicEvaluator } from '@examind/calculator-react';
+import Calculator from '@examind/calculator-mui';
 
 import BareSkin from './BareSkin';
-
-// A stand-in "mode" that proves the shipped skin routes evaluation through a
-// custom evaluator: x-squared returns a fixed sentinel (42) instead of v*v,
-// while everything else defers to basic arithmetic. Real modes (financial /
-// scientific) plug into the same `evaluator` seam.
-const SENTINEL_SQUARE = 42;
-const sentinelEvaluator: Evaluator = {
-  evaluate: basicEvaluator.evaluate,
-  applyUnary: (operator, value) =>
-    operator === 'square'
-      ? SENTINEL_SQUARE
-      : basicEvaluator.applyUnary(operator, value),
-};
 
 const Section = ({
   title,
@@ -54,15 +40,12 @@ const Section = ({
 // The skin renders no surface of its own, so the host decides what it sits on.
 // Here that's a raised card; embedded in a page section it might be nothing at
 // all, and in EXAMIND it's a draggable panel that owns the elevation.
-const CalculatorCard = ({ evaluator }: { evaluator?: Evaluator }) => (
+const CalculatorCard = () => (
   <Paper
     elevation={3}
     sx={{ p: 2, borderRadius: 2, bgcolor: 'background.default' }}
   >
-    <Calculator
-      evaluator={evaluator}
-      sx={{ width: 288, maxWidth: '100%' }}
-    />
+    <Calculator sx={{ width: 288, maxWidth: '100%' }} />
   </Paper>
 );
 
@@ -131,12 +114,6 @@ const App = () => {
             subtitle="raw hook + plain HTML buttons - bring your own UI"
           >
             <BareSkin />
-          </Section>
-          <Section
-            title="custom evaluator"
-            subtitle="same MUI skin, a mode-swapped engine (x² -> 42)"
-          >
-            <CalculatorCard evaluator={sentinelEvaluator} />
           </Section>
         </Stack>
       </Box>

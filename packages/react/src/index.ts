@@ -2,8 +2,5 @@
 // entry point if they prefer a single import.
 export * from '@examind/calculator-core';
 
-export {
-  useCalculator,
-  keyToAction,
-} from './useCalculator';
+export { useCalculator, keyToAction } from './useCalculator';
 export type { UseCalculatorResult } from './useCalculator';

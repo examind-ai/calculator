@@ -21,14 +21,14 @@ independent axes**. Knowing the axes is all you need to place a new package.
 
 ## Packages
 
-| Package | Axis | Depends on | Status |
-| --- | --- | --- | --- |
-| `calculator-core` | engine (base) | - | shipped |
-| `calculator-react` | engine (React binding) | core | shipped |
-| `calculator-mui` | skin | react | shipped |
-| `calculator-financial` | mode | core | planned |
-| `calculator-scientific` | mode | core | planned |
-| `calculator-shadcn` | skin | react | planned |
+| Package                 | Axis                   | Depends on | Status  |
+| ----------------------- | ---------------------- | ---------- | ------- |
+| `calculator-core`       | engine (base)          | -          | shipped |
+| `calculator-react`      | engine (React binding) | core       | shipped |
+| `calculator-mui`        | skin                   | react      | shipped |
+| `calculator-financial`  | mode                   | core       | planned |
+| `calculator-scientific` | mode                   | core       | planned |
+| `calculator-shadcn`     | skin                   | react      | planned |
 
 > "Planned" rows describe the **pattern**, not a delivery commitment.
 
@@ -50,19 +50,41 @@ system is a skin. No `-mode-` / `-skin-` infix needed.
 so it lives inside `core` as the default `basicEvaluator` (which implements the
 same `Evaluator` interface every mode uses - basic is just the bundled default).
 
+### Numbers cross the seam as `Value` strings
+
+Every operand and result that crosses the `Evaluator` interface, and everything
+stored in `CalculatorState`, is a `Value`: a branded canonical decimal string
+such as `"0.3"` or `"0.3333333333333333333333333333333333333333"`. Never a JS
+`number`. Strings are exact, JSON-safe and library-neutral, so no layer outside
+the evaluator can reintroduce binary floating point.
+
+Inside `core`, `value.ts` is the only module that imports decimal.js: a private
+clone at 40 significant digits, round half up, isolated from any host
+configuration. `basicEvaluator` parses `Value` -> `Decimal`, computes, and
+serialises back. Swapping the library means editing that one file and its tests.
+
+The state machine holds two things for the current register: `entry`, the
+string being typed or the 15-digit rounded view of a result, and `value`, the
+exact result when there is one. Every follow-on operation consumes `value`, so
+`1 / 3 = x 3 =` is exactly `1`.
+
 ### Adding a mode
 
-- Implements the `Evaluator` interface from `core` and extends the basic
-  operations (a financial calculator still needs `+ - x /`).
+- Implements the `Evaluator` interface from `core` - `parse`, `evaluate`,
+  `applyUnary`, `percent`, `format`, all `Value` in / `Value` out - and extends
+  the basic operations (a financial calculator still needs `+ - x /`).
 - Framework-agnostic; depends only on `core`. Consumers compose it into the
   engine via `useCalculator(evaluator)`.
+- The seam exists for our own modes, not as a public extension point. It also
+  protects against replacing the decimal library, not against running two:
+  one numeric type across every mode, always.
 
 ### Adding a skin
 
 - Consumes `useCalculator()` from `calculator-react` and renders the UI.
 - **Draw only palette / theme tokens from the host - never hardcode colors.** A
-  skin owns *structure* (layout, which keys, spans) but adopts the host design
-  system's theme for *appearance*. For example, the MUI skin sets its button
+  skin owns _structure_ (layout, which keys, spans) but adopts the host design
+  system's theme for _appearance_. For example, the MUI skin sets its button
   variant explicitly (structure) but takes every color from the host MUI theme.
 - **Render no surface - the host owns it.** A skin must not set elevation,
   background, border radius, outer padding or width on its root. Where the
@@ -74,7 +96,7 @@ same `Evaluator` interface every mode uses - basic is just the bundled default).
 
 ## Why the split
 
-`core` is the reusable, dependency-free gem. The `react` binding removes the
+`core` is the reusable gem (its one dependency is decimal.js). The `react` binding removes the
 glue every skin would otherwise duplicate (reducer wiring, keyboard, selectors).
 Skins stay thin. That is what makes "bring your own UI" real rather than
 aspirational.

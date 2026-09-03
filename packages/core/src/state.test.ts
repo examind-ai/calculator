@@ -53,9 +53,11 @@ const expression = (...tokens: string[]) =>
 const clearMode = (...tokens: string[]) =>
   getClearMode(run(...tokens));
 
-// Squaring 9 eight times stays finite (~1.8e244); a ninth overflows to
-// Infinity, which the state machine must surface as an error.
-const bigViaSquares = ['9', ...Array(8).fill('x^2')];
+// Exact decimal has no float ceiling, but decimal.js does cap the exponent
+// (~1e9000000000000000). Squaring 9 fifty-three times lands just under it, so
+// the next square (or a product of two such values) overflows to Infinity,
+// which the state machine must surface as an error.
+const bigViaSquares = ['9', ...Array(53).fill('x^2')];
 
 describe('digit / decimal accumulation', () => {
   it('accumulates digits', () => {
@@ -193,7 +195,9 @@ describe('clear semantics', () => {
     const state = run('7', '+', '8', '=', 'CE');
     expect(state.operands).toEqual([]);
     expect(state.operators).toEqual([]);
-    expect(getExpression(run('7', '+', '8', '=', 'CE', '2'))).toBe('2');
+    expect(getExpression(run('7', '+', '8', '=', 'CE', '2'))).toBe(
+      '2',
+    );
   });
 });
 
@@ -275,13 +279,15 @@ describe('a unary / percent / negate on a result breaks the repeat chain', () =>
   // A unary / percent / negate applied to a result clears the repeat fields, so
   // a following `=` is a stable no-op - it never replays the pre-unary op one
   // press late (the old stale-replay bug).
-  it('unary: 9 x 6 = sqrt = = -> 7.34846922835 at every =', () => {
-    expect(display('9', 'x', '6', '=', 'sqrt')).toBe('7.34846922835');
+  it('unary: 9 x 6 = sqrt = = -> 7.34846922834953 at every =', () => {
+    expect(display('9', 'x', '6', '=', 'sqrt')).toBe(
+      '7.34846922834953',
+    );
     expect(display('9', 'x', '6', '=', 'sqrt', '=')).toBe(
-      '7.34846922835',
+      '7.34846922834953',
     );
     expect(display('9', 'x', '6', '=', 'sqrt', '=', '=')).toBe(
-      '7.34846922835',
+      '7.34846922834953',
     );
   });
 
@@ -311,8 +317,9 @@ describe('non-finite results surface as Error', () => {
     ).toBe('Error');
   });
 
-  it('unary: squaring past the float ceiling -> Error', () => {
-    expect(display('9', ...Array(9).fill('x^2'))).toBe('Error');
+  it('unary: squaring past the exponent ceiling -> Error', () => {
+    expect(display(...bigViaSquares)).not.toBe('Error');
+    expect(display(...bigViaSquares, 'x^2')).toBe('Error');
   });
 });
 
@@ -332,23 +339,36 @@ describe('entry length cap (~15 significant digits)', () => {
   it('does not count leading zeros toward the cap', () => {
     // "0.000" + 15 significant digits is still accepted in full.
     expect(
-      display('0', '.', '0', '0', '0', ...'123456789012345'.split('')),
+      display(
+        '0',
+        '.',
+        '0',
+        '0',
+        '0',
+        ...'123456789012345'.split(''),
+      ),
     ).toBe('0.000123456789012345');
   });
 });
 
 describe('bounded result formatting', () => {
   it('keeps a large product readable via exponential notation', () => {
-    // 99999999 x 99999999 = 9999999800000001, formatted to 12 sig figs.
+    // 99999999 x 99999999 = 9999999800000001: 16 digits, one past the
+    // 15 shown, so it goes exponential.
     expect(
-      display(...'99999999'.split(''), 'x', ...'99999999'.split(''), '='),
+      display(
+        ...'99999999'.split(''),
+        'x',
+        ...'99999999'.split(''),
+        '=',
+      ),
     ).toBe('9.9999998e+15');
   });
 
   it('renders a very large repeated-square result as exponential', () => {
     // 9 squared five times = 9^32 ~ 3.43e30.
     expect(display('9', 'x^2', 'x^2', 'x^2', 'x^2', 'x^2')).toBe(
-      '3.43368382029e+30',
+      '3.43368382029251e+30',
     );
   });
 
@@ -358,9 +378,22 @@ describe('bounded result formatting', () => {
     );
   });
 
+  it('shows an exact 13-digit product in full', () => {
+    expect(
+      display(
+        ...'1234567'.split(''),
+        'x',
+        ...'1234567'.split(''),
+        '=',
+      ),
+    ).toBe('1524155677489');
+  });
+
   it('keeps mid-range values as plain fixed strings', () => {
     expect(display('7', '+', '8', '=')).toBe('15');
-    expect(display('0', '.', '1', '+', '0', '.', '2', '=')).toBe('0.3');
+    expect(display('0', '.', '1', '+', '0', '.', '2', '=')).toBe(
+      '0.3',
+    );
   });
 });
 
@@ -427,5 +460,107 @@ describe('contextual clear key label (AC vs C)', () => {
 
   it('is AC in an error state', () => {
     expect(clearMode('5', '/', '0', '=')).toBe('AC');
+  });
+});
+
+describe('results carry full precision, not the displayed digits', () => {
+  it('1 / 3 = x 3 = -> 1 (was 0.99... when the display was reused)', () => {
+    expect(display('1', '/', '3', '=', 'x', '3', '=')).toBe('1');
+  });
+
+  it('1 / 7 = x 7 = -> 1', () => {
+    expect(display('1', '/', '7', '=', 'x', '7', '=')).toBe('1');
+  });
+
+  it('2 / 3 = + 1 / 3 = -> 1', () => {
+    expect(display('2', '/', '3', '=', '+', '1', '/', '3', '=')).toBe(
+      '1',
+    );
+  });
+
+  it('a unary result feeds the next unary exactly: 2 sqrt x^2 -> 2', () => {
+    expect(display('2', 'sqrt', 'x^2')).toBe('2');
+  });
+
+  it('a percent result is exact: 1 / 3 = % x 300 = -> 1', () => {
+    expect(
+      display('1', '/', '3', '=', '%', 'x', '3', '0', '0', '='),
+    ).toBe('1');
+  });
+
+  it('negating a result keeps its precision: 1 / 3 = +/- x 3 = -> -1', () => {
+    expect(display('1', '/', '3', '=', '+/-', 'x', '3', '=')).toBe(
+      '-1',
+    );
+  });
+
+  it('repeated = replays with the exact operand: 1 / 3 = x 3 = = -> 3', () => {
+    expect(display('1', '/', '3', '=', 'x', '3', '=', '=')).toBe('3');
+  });
+
+  it('= with no new operand reuses the exact result: 1 / 3 = + = -> 0.666666666666667', () => {
+    expect(display('1', '/', '3', '=', '+', '=')).toBe(
+      '0.666666666666667',
+    );
+  });
+
+  it('typing after a result discards it: 1 / 3 = 5 x 3 = -> 15', () => {
+    expect(display('1', '/', '3', '=', '5', 'x', '3', '=')).toBe(
+      '15',
+    );
+  });
+
+  it('CE after a result discards it: 1 / 3 = CE 5 = -> 5', () => {
+    expect(display('1', '/', '3', '=', 'CE', '5', '=')).toBe('5');
+  });
+
+  it('the expression line still shows the rounded operand', () => {
+    expect(expression('1', '/', '3', '=', 'x', '3', '=')).toBe(
+      '0.333333333333333 × 3 =',
+    );
+  });
+
+  it('the carried value is the 40-digit result, the entry its 15-digit view', () => {
+    const state = run('1', '/', '3', '=');
+    expect(state.value).toBe('0.' + '3'.repeat(40));
+    expect(state.entry).toBe('0.333333333333333');
+  });
+});
+
+describe('a committed entry is rendered as a value', () => {
+  it('bare = on a trailing point: 5 . = -> 5', () => {
+    expect(display('5', '.', '=')).toBe('5');
+    expect(expression('5', '.', '=')).toBe('5 =');
+  });
+
+  it('bare = on a lone point: . = -> 0', () => {
+    expect(display('.', '=')).toBe('0');
+  });
+
+  it('bare = on negative zero: 0 . 5 +/- back back = -> 0', () => {
+    expect(display('0', '.', '5', '+/-', 'back', 'back', '=')).toBe(
+      '0',
+    );
+  });
+
+  it('operator after a trailing point: 5 . + -> 5, then 5 . + 2 = -> 7', () => {
+    expect(display('5', '.', '+')).toBe('5');
+    expect(display('5', '.', '+', '2', '=')).toBe('7');
+  });
+
+  it('bare = carries the entry as an exact value: 5 . = x 3 = -> 15', () => {
+    expect(display('5', '.', '=', 'x', '3', '=')).toBe('15');
+  });
+});
+
+describe('continuing from a result clears the repeat fields', () => {
+  it('9 x 6 = + leaves nothing for = to replay', () => {
+    const state = run('9', 'x', '6', '=', '+');
+    expect(state.repeatOperator).toBeNull();
+    expect(state.repeatOperand).toBeNull();
+  });
+
+  it('9 x 6 = + = adds the result to itself, not x 6 again', () => {
+    expect(display('9', 'x', '6', '=', '+', '=')).toBe('108');
   });
 });

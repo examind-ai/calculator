@@ -1,5 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Box, Button, SxProps, Theme, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  SxProps,
+  Theme,
+  Typography,
+} from '@mui/material';
 import {
   CalculatorAction,
   Evaluator,
@@ -9,7 +15,7 @@ import {
 // The skin: an EXAMIND-themed (MUI, light + dark) button grid over the
 // headless engine (@examind/calculator-core via @examind/calculator-react).
 // Styling uses theme palette tokens only, so dark mode falls out of the host
-// theme with no hardcoded colors. Later modes swap the evaluator; this grid
+// theme with no hardcoded colors. Modes swap the evaluator; this grid
 // stays the same shape.
 //
 // The skin owns structure and renders no surface of its own: no elevation, no
@@ -214,7 +220,9 @@ const DISPLAY_MIN_FONT_REM = 0.75;
 // calculator must never clip or ellipsize a number. Short values keep the base
 // font; the shrink kicks in only when the value would otherwise overflow (e.g.
 // a long typed number or an exponential result). Structure only - no colors.
-const useAutoFitFont = (value: string): {
+const useAutoFitFont = (
+  value: string,
+): {
   ref: React.RefObject<HTMLSpanElement>;
   fontRem: number;
 } => {
@@ -366,9 +374,7 @@ export const Calculator = ({
                 py: 1.25,
                 fontSize: '1.05rem',
                 textTransform: 'none',
-                gridColumn: key.span
-                  ? `span ${key.span}`
-                  : undefined,
+                gridColumn: key.span ? `span ${key.span}` : undefined,
               }}
             >
               {label}

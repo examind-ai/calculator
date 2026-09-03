@@ -12,9 +12,7 @@ import {
 } from '@examind/calculator-core';
 
 // Map a physical keyboard key to a calculator action (null = ignore the key).
-export const keyToAction = (
-  key: string,
-): CalculatorAction | null => {
+export const keyToAction = (key: string): CalculatorAction | null => {
   if (/^[0-9]$/.test(key)) return { type: 'digit', value: key };
   switch (key) {
     case '.':
@@ -61,8 +59,9 @@ export interface UseCalculatorResult {
 }
 
 // Headless calculator: owns the reducer + selectors + keyboard mapping, with no
-// UI and no side effects. Pass a custom `evaluator` to swap in a later mode
-// (financial / scientific); omit it for basic arithmetic.
+// UI and no side effects. Omit `evaluator` for basic arithmetic; a mode
+// (financial / scientific) supplies its own. The same evaluator renders the
+// expression line so operands display consistently with the result.
 export const useCalculator = (
   evaluator?: Evaluator,
 ): UseCalculatorResult => {
@@ -86,7 +85,7 @@ export const useCalculator = (
   return {
     state,
     display: getDisplay(state),
-    expression: getExpression(state),
+    expression: getExpression(state, evaluator),
     clearMode: getClearMode(state),
     error: state.error,
     dispatch,

@@ -20,10 +20,12 @@ describe('<Calculator /> (MUI skin)', () => {
     fireEvent.click(screen.getByTestId('calc-key-8'));
     fireEvent.click(screen.getByTestId('calc-key-equals'));
 
-    expect(screen.getByTestId('calculator-display').textContent).toBe('15');
-    expect(screen.getByTestId('calculator-expression').textContent).toBe(
-      '7 + 8 =',
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '15',
     );
+    expect(
+      screen.getByTestId('calculator-expression').textContent,
+    ).toBe('7 + 8 =');
   });
 
   it('flips the contextual clear key AC -> C -> AC', () => {
@@ -37,7 +39,9 @@ describe('<Calculator /> (MUI skin)', () => {
 
     // C clears just the entry and drops back to AC.
     fireEvent.click(clear);
-    expect(screen.getByTestId('calculator-display').textContent).toBe('0');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '0',
+    );
     expect(clear.textContent).toBe('AC');
   });
 
@@ -47,21 +51,27 @@ describe('<Calculator /> (MUI skin)', () => {
 
     // A key pressed outside the widget must not reach it.
     fireEvent.keyDown(document.body, { key: '4' });
-    expect(screen.getByTestId('calculator-display').textContent).toBe('0');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '0',
+    );
 
     // Keys within the widget (root is the focus owner) drive it.
     fireEvent.keyDown(widget, { key: '4' });
     fireEvent.keyDown(widget, { key: '2' });
-    expect(screen.getByTestId('calculator-display').textContent).toBe('42');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '42',
+    );
   });
 
   it('exposes a focusable root and non-tabbable grid buttons', () => {
     render(<Calculator />);
-    expect(screen.getByRole('group', { name: 'calculator' })).toHaveProperty(
+    expect(
+      screen.getByRole('group', { name: 'calculator' }),
+    ).toHaveProperty('tabIndex', 0);
+    expect(screen.getByTestId('calc-key-7')).toHaveProperty(
       'tabIndex',
-      0,
+      -1,
     );
-    expect(screen.getByTestId('calc-key-7')).toHaveProperty('tabIndex', -1);
     expect(screen.getByTestId('calc-key-equals')).toHaveProperty(
       'tabIndex',
       -1,
@@ -78,10 +88,12 @@ describe('<Calculator /> (MUI skin)', () => {
     // Enter maps to equals; the button grid is out of the tab order, so the
     // root is the only thing that handles the key - exactly one equals.
     fireEvent.keyDown(widget, { key: 'Enter' });
-    expect(screen.getByTestId('calculator-display').textContent).toBe('15');
-    expect(screen.getByTestId('calculator-expression').textContent).toBe(
-      '7 + 8 =',
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '15',
     );
+    expect(
+      screen.getByTestId('calculator-expression').textContent,
+    ).toBe('7 + 8 =');
   });
 
   it('turns the keyboard fully off with keyboard={false} (clicks still work)', () => {
@@ -91,11 +103,15 @@ describe('<Calculator /> (MUI skin)', () => {
     // Not focusable, and no key handler: typing does nothing.
     expect(widget).toHaveProperty('tabIndex', -1);
     fireEvent.keyDown(widget, { key: '4' });
-    expect(screen.getByTestId('calculator-display').textContent).toBe('0');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '0',
+    );
 
     // On-screen buttons still work by click.
     fireEvent.click(screen.getByTestId('calc-key-4'));
-    expect(screen.getByTestId('calculator-display').textContent).toBe('4');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '4',
+    );
   });
 
   it('does not cross-fire between two calculators', () => {
@@ -110,20 +126,20 @@ describe('<Calculator /> (MUI skin)', () => {
     });
 
     fireEvent.keyDown(first, { key: '5' });
-    expect(within(first).getByTestId('calculator-display').textContent).toBe(
-      '5',
-    );
-    expect(within(second).getByTestId('calculator-display').textContent).toBe(
-      '0',
-    );
+    expect(
+      within(first).getByTestId('calculator-display').textContent,
+    ).toBe('5');
+    expect(
+      within(second).getByTestId('calculator-display').textContent,
+    ).toBe('0');
 
     fireEvent.keyDown(second, { key: '7' });
-    expect(within(second).getByTestId('calculator-display').textContent).toBe(
-      '7',
-    );
+    expect(
+      within(second).getByTestId('calculator-display').textContent,
+    ).toBe('7');
     // The first calculator is untouched by the second's keystroke.
-    expect(within(first).getByTestId('calculator-display').textContent).toBe(
-      '5',
-    );
+    expect(
+      within(first).getByTestId('calculator-display').textContent,
+    ).toBe('5');
   });
 });
