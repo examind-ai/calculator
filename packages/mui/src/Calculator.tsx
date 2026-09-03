@@ -232,18 +232,43 @@ const useAutoFitFont = (
   useLayoutEffect(() => {
     const el = ref.current;
     if (!el) return;
-    // Measure the natural width at the base font, independent of the last size.
-    el.style.fontSize = `${DISPLAY_BASE_FONT_REM}rem`;
-    const { scrollWidth, clientWidth } = el;
-    if (scrollWidth > clientWidth && clientWidth > 0) {
-      // Linear in font size (single nowrap line); a small safety factor keeps
-      // sub-pixel rounding from nudging it back over the edge.
-      const scaled =
-        (DISPLAY_BASE_FONT_REM * clientWidth * 0.98) / scrollWidth;
-      setFontRem(Math.max(DISPLAY_MIN_FONT_REM, scaled));
-    } else {
-      setFontRem(DISPLAY_BASE_FONT_REM);
-    }
+
+    const fit = () => {
+      // Measure the natural width at the base font, independent of the last
+      // size.
+      el.style.fontSize = `${DISPLAY_BASE_FONT_REM}rem`;
+      const { scrollWidth, clientWidth } = el;
+      let next = DISPLAY_BASE_FONT_REM;
+      if (scrollWidth > clientWidth && clientWidth > 0) {
+        // Linear in font size (single nowrap line); a small safety factor
+        // keeps sub-pixel rounding from nudging it back over the edge.
+        const scaled =
+          (DISPLAY_BASE_FONT_REM * clientWidth * 0.98) / scrollWidth;
+        next = Math.max(DISPLAY_MIN_FONT_REM, scaled);
+      }
+      // Write the size to the DOM here, not only through state. When `next`
+      // equals the current state (two same-length values in a row, e.g. two
+      // exponential results) React skips the re-render, and the element
+      // would otherwise stay at the base size it was just reset to - clipping
+      // the value. State is kept in sync so the rendered style prop agrees.
+      el.style.fontSize = `${next}rem`;
+      setFontRem(next);
+    };
+
+    fit();
+
+    // Refit when the widget is resized (the exam room's panel is resizable).
+    // Only the available width matters; the element's own height changes with
+    // every refit, so ignore those to avoid observer feedback.
+    if (typeof ResizeObserver === 'undefined') return;
+    let lastWidth = el.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (el.clientWidth === lastWidth) return;
+      lastWidth = el.clientWidth;
+      fit();
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
   }, [value]);
 
   return { ref, fontRem };
