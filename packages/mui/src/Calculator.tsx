@@ -268,17 +268,28 @@ export interface CalculatorProps {
   // Thousands separators on both display lines (123,456,789). Defaults to
   // true; set false for plain digits.
   grouping?: boolean;
+  // Accept a pasted number (Ctrl+V or the context menu) while focus is within
+  // the widget. Defaults to true. Requires `keyboard`, since paste events are
+  // delivered to the focused root.
+  paste?: boolean;
 }
 
 export const Calculator = ({
   keyboard = true,
+  paste = true,
   evaluator,
   grouping = true,
   sx,
   className,
 }: CalculatorProps = {}) => {
-  const { display, expression, clearMode, dispatch, handleKey } =
-    useCalculator(evaluator, { grouping });
+  const {
+    display,
+    expression,
+    clearMode,
+    dispatch,
+    handleKey,
+    handlePaste,
+  } = useCalculator(evaluator, { grouping });
 
   const { ref: displayRef, fontRem: displayFontRem } =
     useAutoFitFont(display);
@@ -295,6 +306,7 @@ export const Calculator = ({
       // off, the root is not focusable and no key handler is attached.
       tabIndex={keyboard ? 0 : undefined}
       onKeyDown={keyboard ? handleKey : undefined}
+      onPaste={keyboard && paste ? handlePaste : undefined}
     >
       <Box
         sx={{
