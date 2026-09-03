@@ -118,3 +118,48 @@ describe('useCalculator', () => {
     expect(result.current.display).toBe('0');
   });
 });
+
+describe('useCalculator - digit grouping', () => {
+  const type = (
+    result: { current: ReturnType<typeof useCalculator> },
+    keys: string,
+  ) => {
+    for (const key of keys.split(' '))
+      act(() => {
+        result.current.handleKey({ key, preventDefault: () => {} });
+      });
+  };
+
+  it('groups the display and expression lines by default', () => {
+    const { result } = renderHook(() => useCalculator());
+    type(result, '1 2 3 4 5 6 7 * 2 =');
+    expect(result.current.display).toBe('2,469,134');
+    expect(result.current.expression).toBe('1,234,567 × 2 =');
+  });
+
+  it('leaves the fraction, a typed trailing point and exponents alone', () => {
+    const { result } = renderHook(() => useCalculator());
+    type(result, '1 2 3 4 . 5 0');
+    expect(result.current.display).toBe('1,234.50');
+    type(result, 'Escape 1 2 3 4 .');
+    expect(result.current.display).toBe('1,234.');
+    type(result, 'Escape 1 / 8 0 0 0 0 0 0 0 =');
+    expect(result.current.display).toBe('1.25e-8');
+  });
+
+  it('never groups the raw state', () => {
+    const { result } = renderHook(() => useCalculator());
+    type(result, '1 2 3 4 5 6 7 * 2 =');
+    expect(result.current.state.entry).toBe('2469134');
+    expect(result.current.state.operands).toEqual(['1234567', '2']);
+  });
+
+  it('can be turned off', () => {
+    const { result } = renderHook(() =>
+      useCalculator(undefined, { grouping: false }),
+    );
+    type(result, '1 2 3 4 5 6 7 * 2 =');
+    expect(result.current.display).toBe('2469134');
+    expect(result.current.expression).toBe('1234567 × 2 =');
+  });
+});

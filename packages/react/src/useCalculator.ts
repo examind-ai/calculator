@@ -8,6 +8,8 @@ import {
   getClearMode,
   getDisplay,
   getExpression,
+  groupDigits,
+  groupExpression,
   initialState,
 } from '@examind/calculator-core';
 
@@ -58,12 +60,20 @@ export interface UseCalculatorResult {
   ) => boolean;
 }
 
+export interface UseCalculatorOptions {
+  // Thousands separators on both display lines (123,456,789), like the
+  // iPhone and Windows calculators. Defaults to true. Presentation only: the
+  // engine's strings in `state` are never grouped.
+  grouping?: boolean;
+}
+
 // Headless calculator: owns the reducer + selectors + keyboard mapping, with no
 // UI and no side effects. Omit `evaluator` for basic arithmetic; a mode
 // (financial / scientific) supplies its own. The same evaluator renders the
 // expression line so operands display consistently with the result.
 export const useCalculator = (
   evaluator?: Evaluator,
+  { grouping = true }: UseCalculatorOptions = {},
 ): UseCalculatorResult => {
   const reducer = useMemo(
     () => createReducer(evaluator),
@@ -82,10 +92,13 @@ export const useCalculator = (
     [],
   );
 
+  const display = getDisplay(state);
+  const expression = getExpression(state, evaluator);
+
   return {
     state,
-    display: getDisplay(state),
-    expression: getExpression(state, evaluator),
+    display: grouping ? groupDigits(display) : display,
+    expression: grouping ? groupExpression(expression) : expression,
     clearMode: getClearMode(state),
     error: state.error,
     dispatch,

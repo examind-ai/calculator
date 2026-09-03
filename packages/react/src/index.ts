@@ -3,4 +3,7 @@
 export * from '@examind/calculator-core';
 
 export { useCalculator, keyToAction } from './useCalculator';
-export type { UseCalculatorResult } from './useCalculator';
+export type {
+  UseCalculatorOptions,
+  UseCalculatorResult,
+} from './useCalculator';
