@@ -1,6 +1,6 @@
 {
   "name": "@examind/calculator-core",
-  "version": "0.2.4",
+  "version": "1.0.0",
   "description": "Headless calculator engine: state machine + basic evaluator + eval-plugin interface. Exact decimal arithmetic (decimal.js), framework-agnostic.",
   "license": "MIT",
   "repository": {
