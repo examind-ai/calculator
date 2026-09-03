@@ -6,7 +6,7 @@ import {
   screen,
   within,
 } from '@testing-library/react';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { Calculator } from './Calculator';
 
@@ -234,5 +234,85 @@ describe('<Calculator /> paste', () => {
     expect(screen.getByTestId('calculator-display').textContent).toBe(
       '0',
     );
+  });
+});
+
+describe('<Calculator /> display auto-fit', () => {
+  // jsdom has no layout, so stand in for it: every element is 200px wide and
+  // its content is 20px per character at the base font.
+  const proto = HTMLElement.prototype;
+  const original = {
+    clientWidth: Object.getOwnPropertyDescriptor(
+      proto,
+      'clientWidth',
+    ),
+    scrollWidth: Object.getOwnPropertyDescriptor(
+      proto,
+      'scrollWidth',
+    ),
+  };
+  beforeEach(() => {
+    Object.defineProperty(proto, 'clientWidth', {
+      configurable: true,
+      get: () => 200,
+    });
+    Object.defineProperty(proto, 'scrollWidth', {
+      configurable: true,
+      get(this: HTMLElement) {
+        return (this.textContent?.length ?? 0) * 20;
+      },
+    });
+  });
+  afterEach(() => {
+    for (const [name, descriptor] of Object.entries(original))
+      if (descriptor) Object.defineProperty(proto, name, descriptor);
+      else delete (proto as unknown as Record<string, unknown>)[name];
+  });
+
+  const type = (root: HTMLElement, keys: string) => {
+    for (const key of keys.split(' '))
+      fireEvent.keyDown(root, { key });
+  };
+  const fontRem = () =>
+    parseFloat(
+      screen.getByTestId('calculator-display').style.fontSize,
+    );
+
+  it('shrinks a long value to fit', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    expect(fontRem()).toBe(2);
+    type(root, '1 2 3 4 5 6 7 8 9 0 1 2 3 4 5');
+    // 19 characters with separators -> 380px into 200px.
+    expect(fontRem()).toBeCloseTo((2 * 200 * 0.98) / 380, 5);
+  });
+
+  it('stays shrunk for a second value of the same length (regression)', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    const paste = (text: string) =>
+      fireEvent.paste(root, {
+        clipboardData: { getData: () => text },
+      });
+    paste('123456789012345');
+    const shrunk = fontRem();
+    expect(shrunk).toBeLessThan(2);
+    // A second value with the same character count computes the same size.
+    // React sees no state change and skips the re-render, so the DOM must
+    // have been updated directly - otherwise it stays at the base size the
+    // measurement reset it to, and the value is clipped.
+    paste('543210987654321');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '543,210,987,654,321',
+    );
+    expect(fontRem()).toBeCloseTo(shrunk, 5);
+  });
+
+  it('returns to the base size for a short value', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    type(root, '1 2 3 4 5 6 7 8 9 0 1 2 3 4 5');
+    type(root, 'Escape 7');
+    expect(fontRem()).toBe(2);
   });
 });
