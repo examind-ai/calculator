@@ -7,10 +7,7 @@ export { basicEvaluator } from './evaluator';
 
 export type { Value } from './value';
 
-export type {
-  CalculatorState,
-  CalculatorAction,
-} from './state';
+export type { CalculatorState, CalculatorAction } from './state';
 export {
   initialState,
   createReducer,

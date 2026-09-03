@@ -21,9 +21,12 @@ describe('keyToAction', () => {
     ['-', '-'],
     ['*', 'x'],
     ['/', '/'],
-  ] as const)('maps "%s" to the "%s" binary operator', (key, operator) => {
-    expect(keyToAction(key)).toEqual({ type: 'binary', operator });
-  });
+  ] as const)(
+    'maps "%s" to the "%s" binary operator',
+    (key, operator) => {
+      expect(keyToAction(key)).toEqual({ type: 'binary', operator });
+    },
+  );
 
   it('maps "%" to percent', () => {
     expect(keyToAction('%')).toEqual({ type: 'percent' });
@@ -76,7 +79,9 @@ describe('useCalculator', () => {
   it('computes a full expression through dispatched actions', () => {
     const { result } = renderHook(() => useCalculator());
     act(() => result.current.dispatch({ type: 'digit', value: '7' }));
-    act(() => result.current.dispatch({ type: 'binary', operator: '+' }));
+    act(() =>
+      result.current.dispatch({ type: 'binary', operator: '+' }),
+    );
     act(() => result.current.dispatch({ type: 'digit', value: '8' }));
     act(() => result.current.dispatch({ type: 'equals' }));
     expect(result.current.display).toBe('15');
@@ -88,7 +93,10 @@ describe('useCalculator', () => {
     const preventDefault = vi.fn();
     let handled: boolean | undefined;
     act(() => {
-      handled = result.current.handleKey({ key: '7', preventDefault });
+      handled = result.current.handleKey({
+        key: '7',
+        preventDefault,
+      });
     });
     expect(handled).toBe(true);
     expect(preventDefault).toHaveBeenCalledOnce();
@@ -100,7 +108,10 @@ describe('useCalculator', () => {
     const preventDefault = vi.fn();
     let handled: boolean | undefined;
     act(() => {
-      handled = result.current.handleKey({ key: 'a', preventDefault });
+      handled = result.current.handleKey({
+        key: 'a',
+        preventDefault,
+      });
     });
     expect(handled).toBe(false);
     expect(preventDefault).not.toHaveBeenCalled();
