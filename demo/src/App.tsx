@@ -4,6 +4,7 @@ import {
   CssBaseline,
   FormControlLabel,
   Link,
+  Paper,
   Stack,
   Switch,
   ThemeProvider,
@@ -48,6 +49,21 @@ const Section = ({
     </Stack>
     {children}
   </Stack>
+);
+
+// The skin renders no surface of its own, so the host decides what it sits on.
+// Here that's a raised card; embedded in a page section it might be nothing at
+// all, and in EXAMIND it's a draggable panel that owns the elevation.
+const CalculatorCard = ({ evaluator }: { evaluator?: Evaluator }) => (
+  <Paper
+    elevation={3}
+    sx={{ p: 2, borderRadius: 2, bgcolor: 'background.default' }}
+  >
+    <Calculator
+      evaluator={evaluator}
+      sx={{ width: 288, maxWidth: '100%' }}
+    />
+  </Paper>
 );
 
 const App = () => {
@@ -108,7 +124,7 @@ const App = () => {
             title="@examind/calculator-mui"
             subtitle="MUI skin - inherits your theme, keyboard enabled"
           >
-            <Calculator />
+            <CalculatorCard />
           </Section>
           <Section
             title="useCalculator()"
@@ -120,7 +136,7 @@ const App = () => {
             title="custom evaluator"
             subtitle="same MUI skin, a mode-swapped engine (x² -> 42)"
           >
-            <Calculator evaluator={sentinelEvaluator} />
+            <CalculatorCard evaluator={sentinelEvaluator} />
           </Section>
         </Stack>
       </Box>

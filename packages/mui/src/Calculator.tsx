@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Box, Button, Paper, Typography } from '@mui/material';
+import { Box, Button, SxProps, Theme, Typography } from '@mui/material';
 import {
   CalculatorAction,
   Evaluator,
@@ -11,6 +11,12 @@ import {
 // Styling uses theme palette tokens only, so dark mode falls out of the host
 // theme with no hardcoded colors. Later modes swap the evaluator; this grid
 // stays the same shape.
+//
+// The skin owns structure and renders no surface of its own: no elevation, no
+// background, no radius, no width. Where the calculator sits - flush in a page
+// section, inside a floating panel, filling a column - is the host's decision,
+// and only the host knows it. Wrap it in a Paper (see the demo) when it should
+// look like a card.
 
 type KeyVariant = 'digit' | 'function' | 'operator' | 'equals';
 
@@ -236,6 +242,12 @@ const useAutoFitFont = (value: string): {
 };
 
 export interface CalculatorProps {
+  // Styles for the widget root, so the host can size and space it. The root is
+  // a plain Box: give it a width, or let it fill its container (the key grid is
+  // fluid).
+  sx?: SxProps<Theme>;
+  // Forwarded to the root, for hosts styling by class rather than sx.
+  className?: string;
   // Respond to the keyboard while focus is within the widget. Defaults to true.
   // Focus-scoped (no page-level listener): an embedded calculator never
   // swallows keystrokes meant for the surrounding page. Set false to turn the
@@ -250,6 +262,8 @@ export interface CalculatorProps {
 export const Calculator = ({
   keyboard = true,
   evaluator,
+  sx,
+  className,
 }: CalculatorProps = {}) => {
   const { display, expression, clearMode, dispatch, handleKey } =
     useCalculator(evaluator);
@@ -258,15 +272,9 @@ export const Calculator = ({
     useAutoFitFont(display);
 
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        width: 320,
-        maxWidth: '100%',
-        p: 2,
-        borderRadius: 2,
-        bgcolor: 'background.default',
-      }}
+    <Box
+      className={className}
+      sx={sx}
       role="group"
       aria-label="calculator"
       // Focus-scoped keyboard: the root is the sole keyboard-focus owner
@@ -368,7 +376,7 @@ export const Calculator = ({
           );
         })}
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

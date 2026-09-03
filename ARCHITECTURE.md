@@ -64,6 +64,12 @@ same `Evaluator` interface every mode uses - basic is just the bundled default).
   skin owns *structure* (layout, which keys, spans) but adopts the host design
   system's theme for *appearance*. For example, the MUI skin sets its button
   variant explicitly (structure) but takes every color from the host MUI theme.
+- **Render no surface - the host owns it.** A skin must not set elevation,
+  background, border radius, outer padding or width on its root. Where the
+  calculator sits (flush in a page section, inside a floating panel, filling a
+  responsive column) is something only the host knows, so asserting it is the
+  same mistake as hardcoding a color, one level up. Accept `sx` / `className` so
+  the host can size and space the widget, and leave the root a plain `Box`.
 - Keep keyboard and ARIA behavior in the hook, not re-implemented per skin.
 
 ## Why the split

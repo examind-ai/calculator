@@ -19,10 +19,21 @@ npm install @examind/calculator-mui @mui/material @emotion/react @emotion/styled
 ```tsx
 import Calculator from '@examind/calculator-mui';
 
-export default () => <Calculator />;
+export default () => <Calculator sx={{ width: 288 }} />;
 ```
 
 It renders inside your MUI `ThemeProvider` and takes on your palette.
+
+The widget renders **no surface of its own** - no elevation, no background, no
+radius. That's yours to decide, because only you know where it sits. For a card:
+
+```tsx
+<Paper elevation={3} sx={{ p: 2 }}>
+  <Calculator sx={{ width: 288 }} />
+</Paper>
+```
+
+Omit `width` to let the grid fill its container.
 
 ### Bring your own UI
 
