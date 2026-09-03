@@ -25,6 +25,11 @@ export interface CalculatorState {
   operators: BinaryOperator[];
   // Display string for the current register (main line).
   entry: string;
+  // The register's exact value when it holds a computed result (after =, a
+  // unary, percent or negate on one). `entry` is then the rounded view and
+  // this is what the next operation consumes, so 1 / 3 = x 3 = is 1. Null
+  // while the register holds typed text - the text itself is exact.
+  value: Value | null;
   // Next digit starts a fresh entry (set after ops, unary/percent results, =).
   overwrite: boolean;
   // A binary operator is pending and no fresh operand has been entered yet.
@@ -61,6 +66,7 @@ export const initialState: CalculatorState = {
   operands: [],
   operators: [],
   entry: '0',
+  value: null,
   overwrite: true,
   awaitingOperand: false,
   justEquals: false,
@@ -93,13 +99,14 @@ const OPERATOR_SYMBOLS: Record<BinaryOperator, string> = {
 const operatorSymbol = (operator: BinaryOperator): string =>
   OPERATOR_SYMBOLS[operator];
 
-// The current register as an exact Value. `entry` is numeric by construction
-// (digits, one point, optional leading minus), so this only throws if the
-// state machine itself has a bug.
+// The current register as an exact Value: the carried result if there is one,
+// else the typed text. `entry` is numeric by construction (digits, one point,
+// optional leading minus), so parsing only throws if the state machine itself
+// has a bug.
 const currentValue = (
   state: CalculatorState,
   evaluator: Evaluator,
-): Value => evaluator.parse(state.entry);
+): Value => state.value ?? evaluator.parse(state.entry);
 
 // After `=`, the result becomes the seed for whatever comes next; clear the
 // old committed tokens so the new action starts from a clean slate. Also clear
@@ -139,6 +146,7 @@ const digit = (
         !state.overwrite && state.entry === '-0'
           ? '-' + value
           : value,
+      value: null,
       overwrite: false,
       awaitingOperand: false,
       dirty: true,
@@ -152,6 +160,7 @@ const digit = (
   return {
     ...state,
     entry: state.entry + value,
+    value: null,
     overwrite: false,
     awaitingOperand: false,
     dirty: true,
@@ -170,6 +179,7 @@ const decimal = (state: CalculatorState): CalculatorState => {
     return {
       ...state,
       entry: '0.',
+      value: null,
       overwrite: false,
       awaitingOperand: false,
       dirty: true,
@@ -178,6 +188,7 @@ const decimal = (state: CalculatorState): CalculatorState => {
   return {
     ...state,
     entry: state.entry + '.',
+    value: null,
     awaitingOperand: false,
     dirty: true,
   };
@@ -232,6 +243,7 @@ const unary = (
     return {
       ...base,
       entry: evaluator.format(result),
+      value: result,
       overwrite: true,
       awaitingOperand: false,
       dirty: true,
@@ -260,6 +272,7 @@ const percent = (
     return {
       ...base,
       entry: evaluator.format(result),
+      value: result,
       overwrite: true,
       awaitingOperand: false,
       dirty: true,
@@ -276,10 +289,17 @@ const negate = (state: CalculatorState): CalculatorState => {
   if (state.awaitingOperand) return state;
   const base = state.justEquals ? afterEquals(state) : state;
   if (base.entry === '0' || base.entry === '0.') return base;
-  const entry = base.entry.startsWith('-')
-    ? base.entry.slice(1)
-    : '-' + base.entry;
-  return { ...base, entry, dirty: true };
+  const flip = (text: string): string =>
+    text.startsWith('-') ? text.slice(1) : '-' + text;
+  // A carried result is negated exactly alongside its rounded view. Its
+  // canonical form is never "-0" (format renders zero as "0", caught above),
+  // so a sign flip keeps it canonical.
+  return {
+    ...base,
+    entry: flip(base.entry),
+    value: base.value === null ? null : (flip(base.value) as Value),
+    dirty: true,
+  };
 };
 
 const backspace = (state: CalculatorState): CalculatorState => {
@@ -318,6 +338,7 @@ const equals = (
         operands,
         operators,
         entry: evaluator.format(result),
+        value: result,
         overwrite: true,
         awaitingOperand: false,
         justEquals: true,
@@ -346,6 +367,7 @@ const equals = (
       ...state,
       operands,
       entry: evaluator.format(result),
+      value: result,
       overwrite: true,
       awaitingOperand: false,
       justEquals: true,
@@ -368,6 +390,7 @@ const clearEntry = (state: CalculatorState): CalculatorState => {
   return {
     ...base,
     entry: '0',
+    value: null,
     overwrite: true,
     // Re-await the operand for a still-pending operator.
     awaitingOperand: base.operators.length > 0,

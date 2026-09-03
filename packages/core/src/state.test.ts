@@ -448,3 +448,67 @@ describe('contextual clear key label (AC vs C)', () => {
     expect(clearMode('5', '/', '0', '=')).toBe('AC');
   });
 });
+
+describe('results carry full precision, not the displayed digits', () => {
+  it('1 / 3 = x 3 = -> 1 (was 0.999999999999 when the display was reused)', () => {
+    expect(display('1', '/', '3', '=', 'x', '3', '=')).toBe('1');
+  });
+
+  it('1 / 7 = x 7 = -> 1', () => {
+    expect(display('1', '/', '7', '=', 'x', '7', '=')).toBe('1');
+  });
+
+  it('2 / 3 = + 1 / 3 = -> 1', () => {
+    expect(display('2', '/', '3', '=', '+', '1', '/', '3', '=')).toBe(
+      '1',
+    );
+  });
+
+  it('a unary result feeds the next unary exactly: 2 sqrt x^2 -> 2', () => {
+    expect(display('2', 'sqrt', 'x^2')).toBe('2');
+  });
+
+  it('a percent result is exact: 1 / 3 = % x 300 = -> 1', () => {
+    expect(
+      display('1', '/', '3', '=', '%', 'x', '3', '0', '0', '='),
+    ).toBe('1');
+  });
+
+  it('negating a result keeps its precision: 1 / 3 = +/- x 3 = -> -1', () => {
+    expect(display('1', '/', '3', '=', '+/-', 'x', '3', '=')).toBe(
+      '-1',
+    );
+  });
+
+  it('repeated = replays with the exact operand: 1 / 3 = x 3 = = -> 3', () => {
+    expect(display('1', '/', '3', '=', 'x', '3', '=', '=')).toBe('3');
+  });
+
+  it('= with no new operand reuses the exact result: 1 / 3 = + = -> 0.666666666667', () => {
+    expect(display('1', '/', '3', '=', '+', '=')).toBe(
+      '0.666666666667',
+    );
+  });
+
+  it('typing after a result discards it: 1 / 3 = 5 x 3 = -> 15', () => {
+    expect(display('1', '/', '3', '=', '5', 'x', '3', '=')).toBe(
+      '15',
+    );
+  });
+
+  it('CE after a result discards it: 1 / 3 = CE 5 = -> 5', () => {
+    expect(display('1', '/', '3', '=', 'CE', '5', '=')).toBe('5');
+  });
+
+  it('the expression line still shows the rounded operand', () => {
+    expect(expression('1', '/', '3', '=', 'x', '3', '=')).toBe(
+      '0.333333333333 × 3 =',
+    );
+  });
+
+  it('the carried value is the 40-digit result, the entry its 12-digit view', () => {
+    const state = run('1', '/', '3', '=');
+    expect(state.value).toBe('0.' + '3'.repeat(40));
+    expect(state.entry).toBe('0.333333333333');
+  });
+});
