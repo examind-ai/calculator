@@ -16,6 +16,8 @@ import {
 
 const toAction = (token: string): CalculatorAction => {
   if (/^[0-9]$/.test(token)) return { type: 'digit', value: token };
+  if (token.startsWith('paste:'))
+    return { type: 'paste', text: token.slice('paste:'.length) };
   switch (token) {
     case '.':
       return { type: 'decimal' };
@@ -173,6 +175,24 @@ const table: Record<string, Row[]> = {
     ['7 + 8 = CE 2 =', '2', '2 ='],
     ['7 + 8 = C 2 =', '2', '2 ='],
     ['5 CE 3', '3', '3'],
+  ],
+  paste: [
+    ['paste:1,234.5', '1234.5', '1234.5'],
+    ['paste:1,234.5 + 1 =', '1235.5', '1234.5 + 1 ='],
+    ['5 + paste:3 =', '8', '5 + 3 ='],
+    ['7 + 8 = paste:2 x 3 =', '6', '2 \u00d7 3 ='],
+    [
+      'paste:3.14159265358979323846',
+      '3.14159265358979',
+      '3.14159265358979',
+    ],
+    ['paste:1e-7', '1e-7', '1e-7'],
+    ['paste:$2,000 x 1 . 5 =', '3000', '2000 \u00d7 1.5 ='],
+    ['paste:-3 x^2', '9', '9'],
+    ['paste:12 3', '3', '3'],
+    ['paste:abc', '0', '0'],
+    ['5 paste:abc', '5', '5'],
+    ['5 / 0 = paste:3', 'Error', ''],
   ],
   'errors and recovery': [
     ['5 / 0 =', 'Error', ''],

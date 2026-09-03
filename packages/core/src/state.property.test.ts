@@ -52,6 +52,26 @@ const actionArb: fc.Arbitrary<CalculatorAction> = fc.oneof(
     arbitrary: fc.constant({ type: 'backspace' as const }),
   },
   { weight: 4, arbitrary: fc.constant({ type: 'equals' as const }) },
+  {
+    weight: 2,
+    arbitrary: fc
+      .oneof(
+        fc.constantFrom(
+          '1,234.5',
+          ' 42 ',
+          '-3',
+          '\u22127.5',
+          '$1,000',
+          '1e-7',
+          '3.14159265358979323846',
+          'abc',
+          '1.2.3',
+          '',
+        ),
+        fc.string({ maxLength: 12 }),
+      )
+      .map(text => ({ type: 'paste' as const, text })),
+  },
   { weight: 1, arbitrary: fc.constant({ type: 'clear' as const }) },
   {
     weight: 1,
