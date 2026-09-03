@@ -208,6 +208,9 @@ const binary = (
       overwrite: true,
       awaitingOperand: true,
       justEquals: false,
+      // The result is now an operand, not something = can replay.
+      repeatOperator: null,
+      repeatOperand: null,
     };
 
   // No fresh operand entered since the last operator -> swap the operator.
@@ -220,13 +223,21 @@ const binary = (
   // Commit the current register as an operand, then push the operator.
   // A unary or percent result IS a committable operand here - that is the
   // #1324 bug: it must not be discarded by treating this as an operator swap.
-  return {
-    ...state,
-    operands: [...state.operands, currentValue(state, evaluator)],
-    operators: [...state.operators, operator],
-    overwrite: true,
-    awaitingOperand: true,
-  };
+  try {
+    const value = currentValue(state, evaluator);
+    return {
+      ...state,
+      operands: [...state.operands, value],
+      operators: [...state.operators, operator],
+      // The committed operand is now a value: render it as one ("5." -> "5").
+      entry: evaluator.format(value),
+      value,
+      overwrite: true,
+      awaitingOperand: true,
+    };
+  } catch {
+    return { ...state, error: true };
+  }
 };
 
 const unary = (
@@ -349,13 +360,23 @@ const equals = (
     }
   }
 
-  if (state.operators.length === 0)
-    return {
-      ...state,
-      overwrite: true,
-      justEquals: true,
-      dirty: false,
-    };
+  // Bare `=` on a lone entry: the entry becomes a result, so render it as
+  // one ("5." -> "5", "-0" -> "0") and carry it exactly like any result.
+  if (state.operators.length === 0) {
+    try {
+      const value = currentValue(state, evaluator);
+      return {
+        ...state,
+        entry: evaluator.format(value),
+        value,
+        overwrite: true,
+        justEquals: true,
+        dirty: false,
+      };
+    } catch {
+      return { ...state, error: true };
+    }
+  }
 
   try {
     const operands = [

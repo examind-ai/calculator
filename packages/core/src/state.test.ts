@@ -526,3 +526,41 @@ describe('results carry full precision, not the displayed digits', () => {
     expect(state.entry).toBe('0.333333333333333');
   });
 });
+
+describe('a committed entry is rendered as a value', () => {
+  it('bare = on a trailing point: 5 . = -> 5', () => {
+    expect(display('5', '.', '=')).toBe('5');
+    expect(expression('5', '.', '=')).toBe('5 =');
+  });
+
+  it('bare = on a lone point: . = -> 0', () => {
+    expect(display('.', '=')).toBe('0');
+  });
+
+  it('bare = on negative zero: 0 . 5 +/- back back = -> 0', () => {
+    expect(display('0', '.', '5', '+/-', 'back', 'back', '=')).toBe(
+      '0',
+    );
+  });
+
+  it('operator after a trailing point: 5 . + -> 5, then 5 . + 2 = -> 7', () => {
+    expect(display('5', '.', '+')).toBe('5');
+    expect(display('5', '.', '+', '2', '=')).toBe('7');
+  });
+
+  it('bare = carries the entry as an exact value: 5 . = x 3 = -> 15', () => {
+    expect(display('5', '.', '=', 'x', '3', '=')).toBe('15');
+  });
+});
+
+describe('continuing from a result clears the repeat fields', () => {
+  it('9 x 6 = + leaves nothing for = to replay', () => {
+    const state = run('9', 'x', '6', '=', '+');
+    expect(state.repeatOperator).toBeNull();
+    expect(state.repeatOperand).toBeNull();
+  });
+
+  it('9 x 6 = + = adds the result to itself, not x 6 again', () => {
+    expect(display('9', 'x', '6', '=', '+', '=')).toBe('108');
+  });
+});
