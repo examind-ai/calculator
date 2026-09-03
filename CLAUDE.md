@@ -5,8 +5,8 @@ workspace, Node 22, TypeScript, Vitest, tsup, MIT.
 
 ## Packages
 
-- `@examind/calculator-core` - engine (state machine + basic evaluator + eval
-  interface), zero deps.
+- `@examind/calculator-core` - engine (state machine + exact decimal evaluator +
+  eval interface). One dependency, decimal.js, imported only in `value.ts`.
 - `@examind/calculator-react` - `useCalculator()` headless React binding.
 - `@examind/calculator-mui` - React + MUI skin.
 - `demo/` - Vite app (deployed to GitHub Pages).
@@ -36,6 +36,11 @@ its source before re-checking the demo.
   component owns structure; the host owns appearance.
 - New **modes** implement the `Evaluator` interface from `core`; new **skins**
   consume `useCalculator()` from `calculator-react`.
+- **Numbers are `Value` strings, never JS `number`.** Arithmetic and rounding
+  live behind the `Evaluator` seam; `state.ts` must not do math or call
+  `Number()`. Only `value.ts` imports decimal.js.
+- Results are computed at 40 significant digits and displayed at 15; the exact
+  result is carried in `state.value` through `=`, unary, percent and negate.
 - Never use em / en dashes in code or docs - plain hyphens only.
 
 ## Dev engine

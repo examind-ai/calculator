@@ -4,9 +4,21 @@ A headless calculator engine with framework skins - the same core, any UI.
 
 **[Live demo &rarr;](https://examind-ai.github.io/calculator/)**
 
-- **Headless core** - state machine + evaluator, zero dependencies, framework-agnostic.
+- **Headless core** - state machine + exact decimal evaluator, framework-agnostic.
 - **React binding** - a `useCalculator()` hook; bring your own UI.
 - **MUI skin** - a ready-to-use component that adopts your MUI theme.
+
+Built for exam rooms, where a wrong digit is not an option:
+
+- **Exact arithmetic.** `0.1 + 0.2` is `0.3` because it is, not because the
+  display hides binary float noise. Results are computed at 40 significant
+  digits (decimal.js) and shown at 15.
+- **Precision carries through `=`.** `1 / 3 = x 3 =` is `1`; the next
+  operation always consumes the exact result, never the rounded display.
+- **Standard precedence.** `2 + 3 x 4 = 14`, left-to-right within a level.
+- **Property-tested** against an independent exact-rational oracle, plus a
+  golden keystroke table for percent, repeated `=`, CE / C, negate and error
+  recovery.
 
 ## Install
 
@@ -45,7 +57,8 @@ npm install @examind/calculator-react
 import { useCalculator } from '@examind/calculator-react';
 
 const MyCalculator = () => {
-  const { display, expression, clearMode, dispatch } = useCalculator();
+  const { display, expression, clearMode, dispatch } =
+    useCalculator();
   // Render however you like; dispatch actions like { type: 'digit', value: '7' }.
 };
 ```
@@ -62,11 +75,11 @@ The library grows along **two independent axes** - a headless **engine**
 (`core` + optional **modes**) and **skins** (one per design system) built on the
 `react` binding. Everything plugs into `core`.
 
-| Package | What it is | Ships |
-| --- | --- | :---: |
-| `@examind/calculator-core` | engine: state machine + basic evaluator + eval-plugin interface (zero deps) | &#9989; |
-| `@examind/calculator-react` | `useCalculator()` headless React binding | &#9989; |
-| `@examind/calculator-mui` | React + MUI skin | &#9989; |
+| Package                     | What it is                                                                   |  Ships  |
+| --------------------------- | ---------------------------------------------------------------------------- | :-----: |
+| `@examind/calculator-core`  | engine: state machine + exact decimal evaluator (one dependency: decimal.js) | &#9989; |
+| `@examind/calculator-react` | `useCalculator()` headless React binding                                     | &#9989; |
+| `@examind/calculator-mui`   | React + MUI skin                                                             | &#9989; |
 
 See [ARCHITECTURE.md](./ARCHITECTURE.md) for the full model and how new modes /
 skins fit.

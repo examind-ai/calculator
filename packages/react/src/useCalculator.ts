@@ -59,8 +59,9 @@ export interface UseCalculatorResult {
 }
 
 // Headless calculator: owns the reducer + selectors + keyboard mapping, with no
-// UI and no side effects. Pass a custom `evaluator` to swap in a later mode
-// (financial / scientific); omit it for basic arithmetic.
+// UI and no side effects. Omit `evaluator` for basic arithmetic; a mode
+// (financial / scientific) supplies its own. The same evaluator renders the
+// expression line so operands display consistently with the result.
 export const useCalculator = (
   evaluator?: Evaluator,
 ): UseCalculatorResult => {
