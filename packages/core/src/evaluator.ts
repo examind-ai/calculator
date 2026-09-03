@@ -39,6 +39,10 @@ export interface Evaluator {
   // Render a Value for the display: bounded significant digits, exponential
   // notation outside the readable magnitude range.
   format: (value: Value) => string;
+  // Turn pasted text ("1,234.50", " -3 ", "1.5e-7") into a Value no more
+  // precise than the keypad could have produced (DISPLAY_DIGITS significant
+  // digits). Throws Error if the text is not a single number.
+  paste: (text: string) => Value;
 }
 
 // --- Display formatting ---
@@ -132,6 +136,28 @@ const applyUnary = (operator: UnaryOperator, value: Value): Value => {
   }
 };
 
+// Pasted text is whatever a student copied out of a question: allow thousands
+// separators, surrounding whitespace, a currency sign, a typographic minus and
+// exponent notation; reject anything that is not exactly one number. The
+// result is rounded to the display precision so paste can never smuggle in
+// more digits than typing allows (and never changes magnitude the way
+// truncating would).
+const PASTE_STRIP = /[\s,$]/g;
+const PASTE_NUMBER = /^[+-]?(\d+\.?\d*|\.\d+)(e[+-]?\d+)?$/i;
+
+const paste = (text: string): Value => {
+  const cleaned = text
+    .replace(PASTE_STRIP, '')
+    .replace(/^−/, '-')
+    .replace(/^\+/, '');
+  if (!PASTE_NUMBER.test(cleaned)) throw new Error('Error');
+  return fromDecimal(
+    toDecimal(parseValue(cleaned)).toSignificantDigits(
+      DISPLAY_DIGITS,
+    ),
+  );
+};
+
 const percent = (value: Value, base: Value | null): Value => {
   const d = toDecimal(value);
   const scaled = base === null ? d : toDecimal(base).times(d);
@@ -144,4 +170,5 @@ export const basicEvaluator: Evaluator = {
   applyUnary,
   percent,
   format,
+  paste,
 };

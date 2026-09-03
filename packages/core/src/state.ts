@@ -48,6 +48,11 @@ export interface CalculatorState {
   // leaves it unchanged - so `9 x` stays C, but `9 x 6 =` then `+` stays AC.
   dirty: boolean;
   error: boolean;
+  // A paste that was not a number (Windows: "Invalid input"). The register is
+  // cleared and the main line shows the message; a digit, point or new paste
+  // recovers directly, C / CE clear it, and every other key is inert until a
+  // value is entered - so a stale value can never be operated on by mistake.
+  invalidInput: boolean;
 }
 
 export type CalculatorAction =
@@ -60,7 +65,9 @@ export type CalculatorAction =
   | { type: 'backspace' }
   | { type: 'equals' }
   | { type: 'clear' }
-  | { type: 'clearEntry' };
+  | { type: 'clearEntry' }
+  // Clipboard text, as copied; the evaluator decides whether it is a number.
+  | { type: 'paste'; text: string };
 
 export const initialState: CalculatorState = {
   operands: [],
@@ -74,6 +81,7 @@ export const initialState: CalculatorState = {
   repeatOperand: null,
   dirty: false,
   error: false,
+  invalidInput: false,
 };
 
 // Cap typed entry at ~15 significant digits: past this a JS double cannot
@@ -402,6 +410,44 @@ const equals = (
   }
 };
 
+// Pasted text replaces the current register with the number it contains,
+// rounded to what the keypad could have produced, and behaves like a result
+// (the next operation consumes it, a digit starts fresh). Text that is not a
+// number clears the register and shows "Invalid input" rather than being
+// silently ignored: otherwise the student could operate on the stale value
+// believing the paste had landed. It is not the sticky Error state - nothing
+// mathematically wrong happened - so typing recovers immediately.
+const paste = (
+  state: CalculatorState,
+  text: string,
+  evaluator: Evaluator,
+): CalculatorState => {
+  const base = state.justEquals ? clearAll() : state;
+  let value: Value;
+  try {
+    value = evaluator.paste(text);
+  } catch {
+    return {
+      ...base,
+      entry: '0',
+      value: null,
+      overwrite: true,
+      // Keep a pending operator waiting for its operand.
+      awaitingOperand: base.operators.length > 0,
+      dirty: true,
+      invalidInput: true,
+    };
+  }
+  return {
+    ...base,
+    entry: evaluator.format(value),
+    value,
+    overwrite: true,
+    awaitingOperand: false,
+    dirty: true,
+  };
+};
+
 const clearEntry = (state: CalculatorState): CalculatorState => {
   if (state.error) return clearAll();
   // After `=` the evaluated expression's operands/operators still linger; clear
@@ -434,6 +480,22 @@ export const createReducer =
     )
       return state;
 
+    // After an invalid paste only entering a value (digit, point, paste) or
+    // clearing gets out; operators, unary, percent, = and backspace are inert.
+    if (state.invalidInput) {
+      switch (action.type) {
+        case 'digit':
+        case 'decimal':
+        case 'paste':
+        case 'clear':
+        case 'clearEntry':
+          state = { ...state, invalidInput: false };
+          break;
+        default:
+          return state;
+      }
+    }
+
     switch (action.type) {
       case 'digit':
         return digit(state, action.value);
@@ -455,6 +517,8 @@ export const createReducer =
         return clearAll();
       case 'clearEntry':
         return clearEntry(state);
+      case 'paste':
+        return paste(state, action.text, evaluator);
     }
   };
 
@@ -462,8 +526,11 @@ export const calculatorReducer = createReducer();
 
 // --- Selectors (derive the two display lines from state) ---
 
-export const getDisplay = (state: CalculatorState): string =>
-  state.error ? 'Error' : state.entry;
+export const getDisplay = (state: CalculatorState): string => {
+  if (state.error) return 'Error';
+  if (state.invalidInput) return 'Invalid input';
+  return state.entry;
+};
 
 // The single clear key is contextual: `C` (clear only the current entry) when
 // there IS a current entry to clear, else `AC` (clear everything). An entry

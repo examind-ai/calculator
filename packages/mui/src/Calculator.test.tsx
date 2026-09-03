@@ -180,3 +180,59 @@ describe('<Calculator /> digit grouping', () => {
     );
   });
 });
+
+describe('<Calculator /> paste', () => {
+  const paste = (target: HTMLElement, text: string) =>
+    fireEvent.paste(target, {
+      clipboardData: { getData: () => text },
+    });
+
+  it('accepts a pasted number on the focused root', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    paste(root, '1,234.5');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '1,234.5',
+    );
+  });
+
+  it('a paste that bubbles from a key button still lands in the engine', () => {
+    render(<Calculator />);
+    paste(screen.getByTestId('calc-key-7'), '42');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '42',
+    );
+  });
+
+  it('shows Invalid input for junk and recovers on a digit', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    fireEvent.click(screen.getByTestId('calc-key-7'));
+    paste(root, 'hello');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      'Invalid input',
+    );
+    fireEvent.click(screen.getByTestId('calc-key-3'));
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '3',
+    );
+  });
+
+  it('paste={false} leaves the display alone', () => {
+    render(<Calculator paste={false} />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    paste(root, '42');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '0',
+    );
+  });
+
+  it('keyboard={false} also disables paste', () => {
+    render(<Calculator keyboard={false} />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    paste(root, '42');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '0',
+    );
+  });
+});

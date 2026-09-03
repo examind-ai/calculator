@@ -163,3 +163,70 @@ describe('useCalculator - digit grouping', () => {
     expect(result.current.expression).toBe('1234567 × 2 =');
   });
 });
+
+describe('useCalculator - handlePaste', () => {
+  const pasteEvent = (text: string | null) => ({
+    clipboardData:
+      text === null
+        ? null
+        : ({ getData: () => text } as unknown as DataTransfer),
+    preventDefault: vi.fn(),
+  });
+
+  it('dispatches the clipboard text, prevents default and returns true', () => {
+    const { result } = renderHook(() => useCalculator());
+    const event = pasteEvent('1,234.5');
+    let handled = false;
+    act(() => {
+      handled = result.current.handlePaste(event);
+    });
+    expect(handled).toBe(true);
+    expect(event.preventDefault).toHaveBeenCalledTimes(1);
+    expect(result.current.display).toBe('1,234.5');
+    expect(result.current.state.value).toBe('1234.5');
+  });
+
+  it('feeds a pending operator: 5 + paste 3 = -> 8', () => {
+    const { result } = renderHook(() => useCalculator());
+    act(() => {
+      result.current.dispatch({ type: 'digit', value: '5' });
+      result.current.dispatch({ type: 'binary', operator: '+' });
+    });
+    act(() => {
+      result.current.handlePaste(pasteEvent('3'));
+    });
+    act(() => result.current.dispatch({ type: 'equals' }));
+    expect(result.current.display).toBe('8');
+  });
+
+  it('shows Invalid input when the text is not a number', () => {
+    const { result } = renderHook(() => useCalculator());
+    act(() => result.current.dispatch({ type: 'digit', value: '7' }));
+    const event = pasteEvent('hello');
+    let handled = false;
+    act(() => {
+      handled = result.current.handlePaste(event);
+    });
+    expect(handled).toBe(true);
+    expect(event.preventDefault).toHaveBeenCalled();
+    expect(result.current.display).toBe('Invalid input');
+    expect(result.current.error).toBe(false);
+    expect(result.current.clearMode).toBe('C');
+    act(() => result.current.dispatch({ type: 'digit', value: '3' }));
+    expect(result.current.display).toBe('3');
+  });
+
+  it('ignores an event with no text', () => {
+    const { result } = renderHook(() => useCalculator());
+    const empty = pasteEvent('');
+    const none = pasteEvent(null);
+    let handled = true;
+    act(() => {
+      handled =
+        result.current.handlePaste(empty) ||
+        result.current.handlePaste(none);
+    });
+    expect(handled).toBe(false);
+    expect(empty.preventDefault).not.toHaveBeenCalled();
+  });
+});

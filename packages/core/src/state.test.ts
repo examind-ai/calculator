@@ -10,6 +10,8 @@ import {
 // Tiny DSL: map a token to an action so tests read like key presses.
 const toAction = (token: string): CalculatorAction => {
   if (/^[0-9]$/.test(token)) return { type: 'digit', value: token };
+  if (token.startsWith('paste:'))
+    return { type: 'paste', text: token.slice('paste:'.length) };
   switch (token) {
     case '.':
       return { type: 'decimal' };
@@ -562,5 +564,102 @@ describe('continuing from a result clears the repeat fields', () => {
 
   it('9 x 6 = + = adds the result to itself, not x 6 again', () => {
     expect(display('9', 'x', '6', '=', '+', '=')).toBe('108');
+  });
+});
+
+describe('paste', () => {
+  it('replaces the register with the pasted number', () => {
+    expect(display('paste:1,234.5')).toBe('1234.5');
+    expect(display('paste:1,234.5', '+', '1', '=')).toBe('1235.5');
+  });
+
+  it('serves as the second operand of a pending operator', () => {
+    expect(display('5', '+', 'paste:3', '=')).toBe('8');
+    expect(expression('5', '+', 'paste:3', '=')).toBe('5 + 3 =');
+  });
+
+  it('starts fresh after =, like typing a digit', () => {
+    expect(
+      display('7', '+', '8', '=', 'paste:2', 'x', '3', '='),
+    ).toBe('6');
+    expect(
+      expression('7', '+', '8', '=', 'paste:2', 'x', '3', '='),
+    ).toBe('2 \u00d7 3 =');
+  });
+
+  it('replaces a half-typed entry', () => {
+    expect(display('1', '2', 'paste:7')).toBe('7');
+  });
+
+  it('is rounded to the display precision and carried exactly', () => {
+    const state = run('paste:3.14159265358979323846');
+    expect(state.entry).toBe('3.14159265358979');
+    expect(state.value).toBe('3.14159265358979');
+  });
+
+  it('behaves like a result: backspace is inert, a digit starts over', () => {
+    expect(display('paste:12', 'back')).toBe('12');
+    expect(display('paste:12', '3')).toBe('3');
+    expect(display('paste:-3', 'x^2')).toBe('9');
+  });
+
+  it('shows Invalid input for text that is not a number and clears the register', () => {
+    expect(display('paste:abc')).toBe('Invalid input');
+    expect(display('5', 'paste:abc')).toBe('Invalid input');
+    const state = run('7', 'paste:abc');
+    expect(state.entry).toBe('0');
+    expect(state.value).toBeNull();
+    expect(state.error).toBe(false);
+    expect(clearMode('paste:abc')).toBe('C');
+  });
+
+  it('keeps a pending operator waiting through an invalid paste', () => {
+    expect(display('5', '+', 'paste:1 + 2')).toBe('Invalid input');
+    expect(expression('5', '+', 'paste:1 + 2')).toBe('5 +');
+    expect(display('5', '+', 'paste:1 + 2', '3', '=')).toBe('8');
+  });
+
+  it('recovers on a digit, a point or a good paste', () => {
+    expect(display('paste:abc', '7')).toBe('7');
+    expect(display('paste:abc', '.')).toBe('0.');
+    expect(display('paste:abc', 'paste:5')).toBe('5');
+    expect(display('paste:abc', 'C')).toBe('0');
+    expect(display('5', 'x', 'paste:abc', 'CE', '3', '=')).toBe('15');
+  });
+
+  it('is inert to operators, unary, percent, = and backspace until then', () => {
+    for (const key of [
+      '+',
+      'x',
+      'sqrt',
+      'x^2',
+      '1/x',
+      '%',
+      '+/-',
+      '=',
+      'back',
+    ])
+      expect(display('paste:abc', key)).toBe('Invalid input');
+    // ...and the stale value cannot be operated on: 7 <junk> x 3 = is 3 (the
+    // x is dropped, 3 recovers, = evaluates the lone 3), never 21.
+    expect(display('7', 'paste:abc', 'x', '3', '=')).toBe('3');
+  });
+
+  it('after = starts a clean context', () => {
+    expect(display('7', '+', '8', '=', 'paste:abc')).toBe(
+      'Invalid input',
+    );
+    expect(expression('7', '+', '8', '=', 'paste:abc')).toBe('0');
+    expect(
+      display('7', '+', '8', '=', 'paste:abc', '2', 'x', '3', '='),
+    ).toBe('6');
+  });
+
+  it('is inert in the error state', () => {
+    expect(display('5', '/', '0', '=', 'paste:3')).toBe('Error');
+  });
+
+  it('flips the clear key to C', () => {
+    expect(clearMode('paste:3')).toBe('C');
   });
 });

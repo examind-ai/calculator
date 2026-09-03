@@ -16,6 +16,10 @@ Built for exam rooms, where a wrong digit is not an option:
 - **Precision carries through `=`.** `1 / 3 = x 3 =` is `1`; the next
   operation always consumes the exact result, never the rounded display.
 - **Standard precedence.** `2 + 3 x 4 = 14`, left-to-right within a level.
+- **Paste a number.** Ctrl+V while the calculator has focus enters a copied
+  value (`1,234.50`, `-3`, `1.5e-7`), rounded to the 15 digits the keypad
+  allows. Text that is not a number clears the entry and shows
+  `Invalid input`, as Windows Calculator does; typing recovers.
 - **Readable numbers.** Thousands separators on both display lines
   (`1,234,567 x 2 =` over `2,469,134`), like the iPhone and Windows
   calculators. Presentation only; `grouping={false}` turns it off.

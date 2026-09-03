@@ -52,6 +52,26 @@ const actionArb: fc.Arbitrary<CalculatorAction> = fc.oneof(
     arbitrary: fc.constant({ type: 'backspace' as const }),
   },
   { weight: 4, arbitrary: fc.constant({ type: 'equals' as const }) },
+  {
+    weight: 2,
+    arbitrary: fc
+      .oneof(
+        fc.constantFrom(
+          '1,234.5',
+          ' 42 ',
+          '-3',
+          '\u22127.5',
+          '$1,000',
+          '1e-7',
+          '3.14159265358979323846',
+          'abc',
+          '1.2.3',
+          '',
+        ),
+        fc.string({ maxLength: 12 }),
+      )
+      .map(text => ({ type: 'paste' as const, text })),
+  },
   { weight: 1, arbitrary: fc.constant({ type: 'clear' as const }) },
   {
     weight: 1,
@@ -90,8 +110,22 @@ const checkInvariants = (
     expect(display).toBe('Error');
     expect(expression).toBe('');
     expect(getClearMode(state)).toBe('AC');
+    expect(state.invalidInput).toBe(false);
     return;
   }
+
+  // An invalid paste: register cleared, message shown, C offered, and every
+  // key other than entering a value or clearing is inert.
+  if (state.invalidInput) {
+    expect(display).toBe('Invalid input');
+    expect(state.entry).toBe('0');
+    expect(state.value).toBeNull();
+    expect(state.overwrite).toBe(true);
+    expect(getClearMode(state)).toBe('C');
+    expect(state.awaitingOperand).toBe(state.operators.length > 0);
+    return;
+  }
+  expect(display).not.toBe('Invalid input');
 
   // The display is always a well-formed number the engine itself accepts.
   expect(display).toMatch(state.overwrite ? FORMATTED : TYPED);
@@ -143,6 +177,15 @@ const checkInvariants = (
     previous.error &&
     action.type !== 'clear' &&
     action.type !== 'clearEntry'
+  )
+    expect(state).toBe(previous);
+
+  // Invalid input is left only by entering a value or clearing.
+  if (
+    previous.invalidInput &&
+    !['digit', 'decimal', 'paste', 'clear', 'clearEntry'].includes(
+      action.type,
+    )
   )
     expect(state).toBe(previous);
 };
