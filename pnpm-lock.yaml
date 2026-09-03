@@ -79,7 +79,11 @@ importers:
         specifier: ^6.0.3
         version: 6.4.3(@types/node@22.20.1)
 
-  packages/core: {}
+  packages/core:
+    dependencies:
+      decimal.js:
+        specifier: ^10.6.0
+        version: 10.6.0
 
   packages/mui:
     dependencies:
