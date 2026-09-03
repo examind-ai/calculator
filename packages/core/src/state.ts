@@ -60,7 +60,9 @@ export type CalculatorAction =
   | { type: 'backspace' }
   | { type: 'equals' }
   | { type: 'clear' }
-  | { type: 'clearEntry' };
+  | { type: 'clearEntry' }
+  // Clipboard text, as copied; the evaluator decides whether it is a number.
+  | { type: 'paste'; text: string };
 
 export const initialState: CalculatorState = {
   operands: [],
@@ -402,6 +404,32 @@ const equals = (
   }
 };
 
+// Pasted text replaces the current register with the number it contains,
+// rounded to what the keypad could have produced, and behaves like a result
+// (the next operation consumes it, a digit starts fresh). Text that is not a
+// number is ignored: a bad paste must never put the calculator into Error.
+const paste = (
+  state: CalculatorState,
+  text: string,
+  evaluator: Evaluator,
+): CalculatorState => {
+  let value: Value;
+  try {
+    value = evaluator.paste(text);
+  } catch {
+    return state;
+  }
+  const base = state.justEquals ? clearAll() : state;
+  return {
+    ...base,
+    entry: evaluator.format(value),
+    value,
+    overwrite: true,
+    awaitingOperand: false,
+    dirty: true,
+  };
+};
+
 const clearEntry = (state: CalculatorState): CalculatorState => {
   if (state.error) return clearAll();
   // After `=` the evaluated expression's operands/operators still linger; clear
@@ -455,6 +483,8 @@ export const createReducer =
         return clearAll();
       case 'clearEntry':
         return clearEntry(state);
+      case 'paste':
+        return paste(state, action.text, evaluator);
     }
   };
 
