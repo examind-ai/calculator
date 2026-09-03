@@ -110,8 +110,22 @@ const checkInvariants = (
     expect(display).toBe('Error');
     expect(expression).toBe('');
     expect(getClearMode(state)).toBe('AC');
+    expect(state.invalidInput).toBe(false);
     return;
   }
+
+  // An invalid paste: register cleared, message shown, C offered, and every
+  // key other than entering a value or clearing is inert.
+  if (state.invalidInput) {
+    expect(display).toBe('Invalid input');
+    expect(state.entry).toBe('0');
+    expect(state.value).toBeNull();
+    expect(state.overwrite).toBe(true);
+    expect(getClearMode(state)).toBe('C');
+    expect(state.awaitingOperand).toBe(state.operators.length > 0);
+    return;
+  }
+  expect(display).not.toBe('Invalid input');
 
   // The display is always a well-formed number the engine itself accepts.
   expect(display).toMatch(state.overwrite ? FORMATTED : TYPED);
@@ -163,6 +177,15 @@ const checkInvariants = (
     previous.error &&
     action.type !== 'clear' &&
     action.type !== 'clearEntry'
+  )
+    expect(state).toBe(previous);
+
+  // Invalid input is left only by entering a value or clearing.
+  if (
+    previous.invalidInput &&
+    !['digit', 'decimal', 'paste', 'clear', 'clearEntry'].includes(
+      action.type,
+    )
   )
     expect(state).toBe(previous);
 };

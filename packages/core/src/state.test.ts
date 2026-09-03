@@ -603,10 +603,56 @@ describe('paste', () => {
     expect(display('paste:-3', 'x^2')).toBe('9');
   });
 
-  it('ignores text that is not a number', () => {
-    expect(run('paste:abc')).toEqual(initialState);
-    expect(display('5', 'paste:abc')).toBe('5');
+  it('shows Invalid input for text that is not a number and clears the register', () => {
+    expect(display('paste:abc')).toBe('Invalid input');
+    expect(display('5', 'paste:abc')).toBe('Invalid input');
+    const state = run('7', 'paste:abc');
+    expect(state.entry).toBe('0');
+    expect(state.value).toBeNull();
+    expect(state.error).toBe(false);
+    expect(clearMode('paste:abc')).toBe('C');
+  });
+
+  it('keeps a pending operator waiting through an invalid paste', () => {
+    expect(display('5', '+', 'paste:1 + 2')).toBe('Invalid input');
+    expect(expression('5', '+', 'paste:1 + 2')).toBe('5 +');
     expect(display('5', '+', 'paste:1 + 2', '3', '=')).toBe('8');
+  });
+
+  it('recovers on a digit, a point or a good paste', () => {
+    expect(display('paste:abc', '7')).toBe('7');
+    expect(display('paste:abc', '.')).toBe('0.');
+    expect(display('paste:abc', 'paste:5')).toBe('5');
+    expect(display('paste:abc', 'C')).toBe('0');
+    expect(display('5', 'x', 'paste:abc', 'CE', '3', '=')).toBe('15');
+  });
+
+  it('is inert to operators, unary, percent, = and backspace until then', () => {
+    for (const key of [
+      '+',
+      'x',
+      'sqrt',
+      'x^2',
+      '1/x',
+      '%',
+      '+/-',
+      '=',
+      'back',
+    ])
+      expect(display('paste:abc', key)).toBe('Invalid input');
+    // ...and the stale value cannot be operated on: 7 <junk> x 3 = is 3 (the
+    // x is dropped, 3 recovers, = evaluates the lone 3), never 21.
+    expect(display('7', 'paste:abc', 'x', '3', '=')).toBe('3');
+  });
+
+  it('after = starts a clean context', () => {
+    expect(display('7', '+', '8', '=', 'paste:abc')).toBe(
+      'Invalid input',
+    );
+    expect(expression('7', '+', '8', '=', 'paste:abc')).toBe('0');
+    expect(
+      display('7', '+', '8', '=', 'paste:abc', '2', 'x', '3', '='),
+    ).toBe('6');
   });
 
   it('is inert in the error state', () => {
