@@ -204,6 +204,20 @@ describe('<Calculator /> paste', () => {
     );
   });
 
+  it('shows Invalid input for junk and recovers on a digit', () => {
+    render(<Calculator />);
+    const root = screen.getByRole('group', { name: 'calculator' });
+    fireEvent.click(screen.getByTestId('calc-key-7'));
+    paste(root, 'hello');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      'Invalid input',
+    );
+    fireEvent.click(screen.getByTestId('calc-key-3'));
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '3',
+    );
+  });
+
   it('paste={false} leaves the display alone', () => {
     render(<Calculator paste={false} />);
     const root = screen.getByRole('group', { name: 'calculator' });

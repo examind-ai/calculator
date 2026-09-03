@@ -199,8 +199,9 @@ describe('useCalculator - handlePaste', () => {
     expect(result.current.display).toBe('8');
   });
 
-  it('still consumes the event when the text is not a number', () => {
+  it('shows Invalid input when the text is not a number', () => {
     const { result } = renderHook(() => useCalculator());
+    act(() => result.current.dispatch({ type: 'digit', value: '7' }));
     const event = pasteEvent('hello');
     let handled = false;
     act(() => {
@@ -208,8 +209,11 @@ describe('useCalculator - handlePaste', () => {
     });
     expect(handled).toBe(true);
     expect(event.preventDefault).toHaveBeenCalled();
-    expect(result.current.display).toBe('0');
+    expect(result.current.display).toBe('Invalid input');
     expect(result.current.error).toBe(false);
+    expect(result.current.clearMode).toBe('C');
+    act(() => result.current.dispatch({ type: 'digit', value: '3' }));
+    expect(result.current.display).toBe('3');
   });
 
   it('ignores an event with no text', () => {
