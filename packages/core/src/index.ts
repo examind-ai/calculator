@@ -5,6 +5,8 @@ export type {
 } from './evaluator';
 export { basicEvaluator } from './evaluator';
 
+export type { Value } from './value';
+
 export type {
   CalculatorState,
   CalculatorAction,
