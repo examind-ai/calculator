@@ -138,10 +138,10 @@ describe('basicEvaluator.format', () => {
   });
 
   it('rounds half up at the display precision', () => {
-    // 12 significant digits: the 13th digit is a 5 followed by nothing.
-    expect(format('0.1234567890125')).toBe('0.123456789013');
+    // 15 significant digits: the 16th digit is a 5 followed by nothing.
+    expect(format('0.1234567890123455')).toBe('0.123456789012346');
     expect(format('0.6666666666666666666666666666666666666667')).toBe(
-      '0.666666666667',
+      '0.666666666666667',
     );
   });
 
@@ -152,10 +152,15 @@ describe('basicEvaluator.format', () => {
     );
   });
 
-  it('switches to exponential at 1e12', () => {
-    expect(format('999999999999')).toBe('999999999999');
-    expect(format('1000000000000')).toBe('1e+12');
+  it('switches to exponential at 1e15', () => {
+    expect(format('999999999999999')).toBe('999999999999999');
+    expect(format('1000000000000000')).toBe('1e+15');
     expect(format('9999999800000001')).toBe('9.9999998e+15');
+  });
+
+  it('shows exact integer results up to 15 digits in full', () => {
+    expect(format('1524155677489')).toBe('1524155677489');
+    expect(format('123456789012345')).toBe('123456789012345');
   });
 
   it('switches to exponential below 1e-6', () => {

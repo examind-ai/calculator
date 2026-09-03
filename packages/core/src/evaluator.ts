@@ -44,8 +44,10 @@ export interface Evaluator {
 // --- Display formatting ---
 
 // Significant digits shown to the user. Results are computed at
-// WORKING_PRECISION and only rounded here, for the view.
-export const DISPLAY_DIGITS = 12;
+// WORKING_PRECISION and only rounded here, for the view. 15 matches the typed
+// entry cap, so a value you can type you can also see back unchanged, and it
+// lets exact integer results up to 15 digits display in full.
+export const DISPLAY_DIGITS = 15;
 
 // Below 10^-6 in magnitude the fixed form is a wall of zeros; at or above
 // 10^DISPLAY_DIGITS it would need more digits than we show. Both switch to

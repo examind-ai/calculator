@@ -279,13 +279,15 @@ describe('a unary / percent / negate on a result breaks the repeat chain', () =>
   // A unary / percent / negate applied to a result clears the repeat fields, so
   // a following `=` is a stable no-op - it never replays the pre-unary op one
   // press late (the old stale-replay bug).
-  it('unary: 9 x 6 = sqrt = = -> 7.34846922835 at every =', () => {
-    expect(display('9', 'x', '6', '=', 'sqrt')).toBe('7.34846922835');
+  it('unary: 9 x 6 = sqrt = = -> 7.34846922834953 at every =', () => {
+    expect(display('9', 'x', '6', '=', 'sqrt')).toBe(
+      '7.34846922834953',
+    );
     expect(display('9', 'x', '6', '=', 'sqrt', '=')).toBe(
-      '7.34846922835',
+      '7.34846922834953',
     );
     expect(display('9', 'x', '6', '=', 'sqrt', '=', '=')).toBe(
-      '7.34846922835',
+      '7.34846922834953',
     );
   });
 
@@ -351,7 +353,8 @@ describe('entry length cap (~15 significant digits)', () => {
 
 describe('bounded result formatting', () => {
   it('keeps a large product readable via exponential notation', () => {
-    // 99999999 x 99999999 = 9999999800000001, formatted to 12 sig figs.
+    // 99999999 x 99999999 = 9999999800000001: 16 digits, one past the
+    // 15 shown, so it goes exponential.
     expect(
       display(
         ...'99999999'.split(''),
@@ -365,7 +368,7 @@ describe('bounded result formatting', () => {
   it('renders a very large repeated-square result as exponential', () => {
     // 9 squared five times = 9^32 ~ 3.43e30.
     expect(display('9', 'x^2', 'x^2', 'x^2', 'x^2', 'x^2')).toBe(
-      '3.43368382029e+30',
+      '3.43368382029251e+30',
     );
   });
 
@@ -373,6 +376,17 @@ describe('bounded result formatting', () => {
     expect(display(...'99999999'.split(''), '1/x')).toBe(
       '1.00000001e-8',
     );
+  });
+
+  it('shows an exact 13-digit product in full', () => {
+    expect(
+      display(
+        ...'1234567'.split(''),
+        'x',
+        ...'1234567'.split(''),
+        '=',
+      ),
+    ).toBe('1524155677489');
   });
 
   it('keeps mid-range values as plain fixed strings', () => {
@@ -450,7 +464,7 @@ describe('contextual clear key label (AC vs C)', () => {
 });
 
 describe('results carry full precision, not the displayed digits', () => {
-  it('1 / 3 = x 3 = -> 1 (was 0.999999999999 when the display was reused)', () => {
+  it('1 / 3 = x 3 = -> 1 (was 0.99... when the display was reused)', () => {
     expect(display('1', '/', '3', '=', 'x', '3', '=')).toBe('1');
   });
 
@@ -484,9 +498,9 @@ describe('results carry full precision, not the displayed digits', () => {
     expect(display('1', '/', '3', '=', 'x', '3', '=', '=')).toBe('3');
   });
 
-  it('= with no new operand reuses the exact result: 1 / 3 = + = -> 0.666666666667', () => {
+  it('= with no new operand reuses the exact result: 1 / 3 = + = -> 0.666666666666667', () => {
     expect(display('1', '/', '3', '=', '+', '=')).toBe(
-      '0.666666666667',
+      '0.666666666666667',
     );
   });
 
@@ -502,13 +516,13 @@ describe('results carry full precision, not the displayed digits', () => {
 
   it('the expression line still shows the rounded operand', () => {
     expect(expression('1', '/', '3', '=', 'x', '3', '=')).toBe(
-      '0.333333333333 × 3 =',
+      '0.333333333333333 × 3 =',
     );
   });
 
-  it('the carried value is the 40-digit result, the entry its 12-digit view', () => {
+  it('the carried value is the 40-digit result, the entry its 15-digit view', () => {
     const state = run('1', '/', '3', '=');
     expect(state.value).toBe('0.' + '3'.repeat(40));
-    expect(state.entry).toBe('0.333333333333');
+    expect(state.entry).toBe('0.333333333333333');
   });
 });
