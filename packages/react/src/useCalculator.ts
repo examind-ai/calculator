@@ -58,6 +58,12 @@ export interface UseCalculatorResult {
   handleKey: (
     event: Pick<KeyboardEvent, 'key' | 'preventDefault'>,
   ) => boolean;
+  // Feed a paste event's plain text to the engine. Calls preventDefault and
+  // returns true when the clipboard held text (whether or not it parsed as
+  // a number - the engine ignores junk).
+  handlePaste: (
+    event: Pick<ClipboardEvent, 'clipboardData' | 'preventDefault'>,
+  ) => boolean;
 }
 
 export interface UseCalculatorOptions {
@@ -92,6 +98,19 @@ export const useCalculator = (
     [],
   );
 
+  const handlePaste = useCallback(
+    (
+      event: Pick<ClipboardEvent, 'clipboardData' | 'preventDefault'>,
+    ) => {
+      const text = event.clipboardData?.getData('text/plain') ?? '';
+      if (!text) return false;
+      event.preventDefault();
+      dispatch({ type: 'paste', text });
+      return true;
+    },
+    [],
+  );
+
   const display = getDisplay(state);
   const expression = getExpression(state, evaluator);
 
@@ -103,5 +122,6 @@ export const useCalculator = (
     error: state.error,
     dispatch,
     handleKey,
+    handlePaste,
   };
 };
