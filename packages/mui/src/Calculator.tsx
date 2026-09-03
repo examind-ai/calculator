@@ -265,16 +265,20 @@ export interface CalculatorProps {
   // The button grid stays the same shape; omit for basic arithmetic
   // (`basicEvaluator`).
   evaluator?: Evaluator;
+  // Thousands separators on both display lines (123,456,789). Defaults to
+  // true; set false for plain digits.
+  grouping?: boolean;
 }
 
 export const Calculator = ({
   keyboard = true,
   evaluator,
+  grouping = true,
   sx,
   className,
 }: CalculatorProps = {}) => {
   const { display, expression, clearMode, dispatch, handleKey } =
-    useCalculator(evaluator);
+    useCalculator(evaluator, { grouping });
 
   const { ref: displayRef, fontRem: displayFontRem } =
     useAutoFitFont(display);

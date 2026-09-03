@@ -143,3 +143,40 @@ describe('<Calculator /> (MUI skin)', () => {
     ).toBe('5');
   });
 });
+
+describe('<Calculator /> digit grouping', () => {
+  const click = (...ids: string[]) => {
+    for (const id of ids)
+      fireEvent.click(screen.getByTestId(`calc-key-${id}`));
+  };
+
+  it('shows thousands separators on both lines by default', () => {
+    render(<Calculator />);
+    click(
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+      '7',
+      'multiply',
+      '2',
+      'equals',
+    );
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '2,469,134',
+    );
+    expect(
+      screen.getByTestId('calculator-expression').textContent,
+    ).toBe('1,234,567 × 2 =');
+  });
+
+  it('grouping={false} renders plain digits', () => {
+    render(<Calculator grouping={false} />);
+    click('1', '2', '3', '4');
+    expect(screen.getByTestId('calculator-display').textContent).toBe(
+      '1234',
+    );
+  });
+});
