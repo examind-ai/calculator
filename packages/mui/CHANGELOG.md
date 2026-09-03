@@ -1,5 +1,18 @@
 # @examind/calculator-mui
 
+## 1.1.0
+
+### Minor Changes
+
+- 4c1976a: Thousands separators on both display lines (`123,456,789`), like the iPhone and Windows calculators. Core exports the pure `groupDigits` / `groupExpression` helpers; `useCalculator(evaluator, { grouping })` and the MUI `grouping` prop default to on. Presentation only: the engine's strings and `state` are never grouped.
+- e1dc669: Paste a number into the calculator. `Evaluator.paste(text)` sanitises copied text (`1,234.50`, `$2,000`, `-3`, `1.5e-7`), rounds to the 15 significant digits the keypad allows, and rejects anything that is not one number; a new `paste` action puts the value in the register like a result. `useCalculator` exposes `handlePaste(event)`; the MUI skin listens for paste on its focusable root (`paste` prop, default true). Text that is not a number clears the register and shows `Invalid input` (as Windows Calculator does) rather than the sticky `Error`: a digit, point or new paste recovers, and other keys are inert until then so a stale value cannot be operated on by mistake.
+
+### Patch Changes
+
+- Updated dependencies [4c1976a]
+- Updated dependencies [e1dc669]
+  - @examind/calculator-react@1.1.0
+
 ## 1.0.0
 
 ### Major Changes
