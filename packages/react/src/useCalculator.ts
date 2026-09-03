@@ -12,9 +12,7 @@ import {
 } from '@examind/calculator-core';
 
 // Map a physical keyboard key to a calculator action (null = ignore the key).
-export const keyToAction = (
-  key: string,
-): CalculatorAction | null => {
+export const keyToAction = (key: string): CalculatorAction | null => {
   if (/^[0-9]$/.test(key)) return { type: 'digit', value: key };
   switch (key) {
     case '.':
@@ -86,7 +84,7 @@ export const useCalculator = (
   return {
     state,
     display: getDisplay(state),
-    expression: getExpression(state),
+    expression: getExpression(state, evaluator),
     clearMode: getClearMode(state),
     error: state.error,
     dispatch,

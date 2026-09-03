@@ -17,9 +17,11 @@ import {
   UnaryOperator,
   basicEvaluator,
 } from './evaluator';
+import { Value } from './value';
 
 export interface CalculatorState {
-  operands: number[];
+  // Committed operands, exact (see value.ts). Never JS numbers.
+  operands: Value[];
   operators: BinaryOperator[];
   // Display string for the current register (main line).
   entry: string;
@@ -34,7 +36,7 @@ export interface CalculatorState {
   // The last binary operator + right operand, replayed when `=` is pressed
   // again (iPhone-style: 9 x 6 = -> 54, = -> 324, = -> 1944).
   repeatOperator: BinaryOperator | null;
-  repeatOperand: number | null;
+  repeatOperand: Value | null;
   // The current entry has been touched (typed, or produced by a unary/percent/
   // negate) since the last reset point (initial, C, =, or backspace-to-0).
   // Drives the C-vs-AC key: C while dirty, AC when clean. A bare binary operator
@@ -79,21 +81,6 @@ const MAX_SIGNIFICANT_DIGITS = 15;
 const significantDigitCount = (entry: string): number =>
   entry.replace(/[^0-9]/g, '').replace(/^0+/, '').length;
 
-// Format a computed result for display, bounded so it never becomes an
-// unreadable 20+ digit fixed string:
-// - trims binary float noise to ~12 significant figures (0.1 + 0.2 -> "0.3");
-// - uses exponential notation for magnitudes outside [1e-6, 1e12], so a very
-//   large or very small result stays compact (1e+20, not 100000000000000000000).
-// Non-finite values are handled upstream (surfaced as Error) before reaching here.
-const formatNumber = (value: number): string => {
-  if (value === 0) return '0';
-  const rounded = Number(value.toPrecision(12));
-  const magnitude = Math.abs(rounded);
-  if (magnitude >= 1e12 || magnitude < 1e-6)
-    return rounded.toExponential();
-  return String(rounded);
-};
-
 // Render operators with their proper glyphs on the expression line
 // (x -> times, / -> divide, - -> minus); + is unchanged.
 const OPERATOR_SYMBOLS: Record<BinaryOperator, string> = {
@@ -106,9 +93,13 @@ const OPERATOR_SYMBOLS: Record<BinaryOperator, string> = {
 const operatorSymbol = (operator: BinaryOperator): string =>
   OPERATOR_SYMBOLS[operator];
 
-// The current register's numeric value.
-const currentValue = (state: CalculatorState): number =>
-  Number(state.entry);
+// The current register as an exact Value. `entry` is numeric by construction
+// (digits, one point, optional leading minus), so this only throws if the
+// state machine itself has a bug.
+const currentValue = (
+  state: CalculatorState,
+  evaluator: Evaluator,
+): Value => evaluator.parse(state.entry);
 
 // After `=`, the result becomes the seed for whatever comes next; clear the
 // old committed tokens so the new action starts from a clean slate. Also clear
@@ -145,7 +136,9 @@ const digit = (
     return {
       ...state,
       entry:
-        !state.overwrite && state.entry === '-0' ? '-' + value : value,
+        !state.overwrite && state.entry === '-0'
+          ? '-' + value
+          : value,
       overwrite: false,
       awaitingOperand: false,
       dirty: true,
@@ -193,12 +186,13 @@ const decimal = (state: CalculatorState): CalculatorState => {
 const binary = (
   state: CalculatorState,
   operator: BinaryOperator,
+  evaluator: Evaluator,
 ): CalculatorState => {
   // Continue from a just-computed result as the new first operand.
   if (state.justEquals)
     return {
       ...state,
-      operands: [currentValue(state)],
+      operands: [currentValue(state, evaluator)],
       operators: [operator],
       overwrite: true,
       awaitingOperand: true,
@@ -217,7 +211,7 @@ const binary = (
   // #1324 bug: it must not be discarded by treating this as an operator swap.
   return {
     ...state,
-    operands: [...state.operands, currentValue(state)],
+    operands: [...state.operands, currentValue(state, evaluator)],
     operators: [...state.operators, operator],
     overwrite: true,
     awaitingOperand: true,
@@ -231,11 +225,13 @@ const unary = (
 ): CalculatorState => {
   const base = state.justEquals ? afterEquals(state) : state;
   try {
-    const result = evaluator.applyUnary(operator, currentValue(base));
-    if (!Number.isFinite(result)) throw new Error('Error');
+    const result = evaluator.applyUnary(
+      operator,
+      currentValue(base, evaluator),
+    );
     return {
       ...base,
-      entry: formatNumber(result),
+      entry: evaluator.format(result),
       overwrite: true,
       awaitingOperand: false,
       dirty: true,
@@ -247,21 +243,30 @@ const unary = (
 
 // Contextual percent: with a pending operator, `x %` reads as a percentage of
 // the preceding operand (200 + 10 % -> 20 -> 220); otherwise as value/100.
-const percent = (state: CalculatorState): CalculatorState => {
+const percent = (
+  state: CalculatorState,
+  evaluator: Evaluator,
+): CalculatorState => {
   const base = state.justEquals ? afterEquals(state) : state;
-  const value = currentValue(base);
-  const result =
+  const left =
     base.operands.length > 0
-      ? (base.operands[base.operands.length - 1] * value) / 100
-      : value / 100;
-  if (!Number.isFinite(result)) return { ...base, error: true };
-  return {
-    ...base,
-    entry: formatNumber(result),
-    overwrite: true,
-    awaitingOperand: false,
-    dirty: true,
-  };
+      ? base.operands[base.operands.length - 1]
+      : null;
+  try {
+    const result = evaluator.percent(
+      currentValue(base, evaluator),
+      left,
+    );
+    return {
+      ...base,
+      entry: evaluator.format(result),
+      overwrite: true,
+      awaitingOperand: false,
+      dirty: true,
+    };
+  } catch {
+    return { ...base, error: true };
+  }
 };
 
 const negate = (state: CalculatorState): CalculatorState => {
@@ -301,16 +306,18 @@ const equals = (
   if (state.justEquals) {
     if (state.repeatOperator === null || state.repeatOperand === null)
       return state;
-    const operands = [currentValue(state), state.repeatOperand];
     const operators = [state.repeatOperator];
     try {
+      const operands = [
+        currentValue(state, evaluator),
+        state.repeatOperand,
+      ];
       const result = evaluator.evaluate(operands, operators);
-      if (!Number.isFinite(result)) throw new Error('Error');
       return {
         ...state,
         operands,
         operators,
-        entry: formatNumber(result),
+        entry: evaluator.format(result),
         overwrite: true,
         awaitingOperand: false,
         justEquals: true,
@@ -329,14 +336,16 @@ const equals = (
       dirty: false,
     };
 
-  const operands = [...state.operands, currentValue(state)];
   try {
+    const operands = [
+      ...state.operands,
+      currentValue(state, evaluator),
+    ];
     const result = evaluator.evaluate(operands, state.operators);
-    if (!Number.isFinite(result)) throw new Error('Error');
     return {
       ...state,
       operands,
-      entry: formatNumber(result),
+      entry: evaluator.format(result),
       overwrite: true,
       awaitingOperand: false,
       justEquals: true,
@@ -387,11 +396,11 @@ export const createReducer =
       case 'decimal':
         return decimal(state);
       case 'binary':
-        return binary(state, action.operator);
+        return binary(state, action.operator, evaluator);
       case 'unary':
         return unary(state, action.operator, evaluator);
       case 'percent':
-        return percent(state);
+        return percent(state, evaluator);
       case 'negate':
         return negate(state);
       case 'backspace':
@@ -424,12 +433,17 @@ export const getClearMode = (state: CalculatorState): 'C' | 'AC' =>
 
 // Top line: the running expression with operator feedback.
 // "9 -", "7 + 8", "2 + 3 x 4", and after `=` "2 + 3 x 4 =".
-export const getExpression = (state: CalculatorState): string => {
+// Operands are exact Values, so the evaluator that produced them renders them;
+// pass the same one given to `createReducer` (basic when omitted).
+export const getExpression = (
+  state: CalculatorState,
+  evaluator: Evaluator = basicEvaluator,
+): string => {
   if (state.error) return '';
 
   const parts: string[] = [];
   for (let i = 0; i < state.operands.length; i++) {
-    parts.push(formatNumber(state.operands[i]));
+    parts.push(evaluator.format(state.operands[i]));
     if (i < state.operators.length)
       parts.push(operatorSymbol(state.operators[i]));
   }

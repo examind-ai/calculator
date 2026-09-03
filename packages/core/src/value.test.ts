@@ -41,7 +41,7 @@ describe('parseValue - canonical form', () => {
 describe('parseValue - rejects non-numbers', () => {
   it.each(['', '-', 'abc', '1.2.3', 'NaN', 'Infinity'])(
     'throws Error on %j',
-    (text) => {
+    text => {
       expect(() => parseValue(text)).toThrow('Error');
     },
   );
@@ -49,7 +49,9 @@ describe('parseValue - rejects non-numbers', () => {
 
 describe('Decimal round trip', () => {
   it('toDecimal -> fromDecimal is lossless', () => {
-    const value = parseValue('123456789012345.678901234567890123456789');
+    const value = parseValue(
+      '123456789012345.678901234567890123456789',
+    );
     expect(fromDecimal(toDecimal(value))).toBe(value);
   });
 

@@ -53,9 +53,11 @@ const expression = (...tokens: string[]) =>
 const clearMode = (...tokens: string[]) =>
   getClearMode(run(...tokens));
 
-// Squaring 9 eight times stays finite (~1.8e244); a ninth overflows to
-// Infinity, which the state machine must surface as an error.
-const bigViaSquares = ['9', ...Array(8).fill('x^2')];
+// Exact decimal has no float ceiling, but decimal.js does cap the exponent
+// (~1e9000000000000000). Squaring 9 fifty-three times lands just under it, so
+// the next square (or a product of two such values) overflows to Infinity,
+// which the state machine must surface as an error.
+const bigViaSquares = ['9', ...Array(53).fill('x^2')];
 
 describe('digit / decimal accumulation', () => {
   it('accumulates digits', () => {
@@ -193,7 +195,9 @@ describe('clear semantics', () => {
     const state = run('7', '+', '8', '=', 'CE');
     expect(state.operands).toEqual([]);
     expect(state.operators).toEqual([]);
-    expect(getExpression(run('7', '+', '8', '=', 'CE', '2'))).toBe('2');
+    expect(getExpression(run('7', '+', '8', '=', 'CE', '2'))).toBe(
+      '2',
+    );
   });
 });
 
@@ -311,8 +315,9 @@ describe('non-finite results surface as Error', () => {
     ).toBe('Error');
   });
 
-  it('unary: squaring past the float ceiling -> Error', () => {
-    expect(display('9', ...Array(9).fill('x^2'))).toBe('Error');
+  it('unary: squaring past the exponent ceiling -> Error', () => {
+    expect(display(...bigViaSquares)).not.toBe('Error');
+    expect(display(...bigViaSquares, 'x^2')).toBe('Error');
   });
 });
 
@@ -332,7 +337,14 @@ describe('entry length cap (~15 significant digits)', () => {
   it('does not count leading zeros toward the cap', () => {
     // "0.000" + 15 significant digits is still accepted in full.
     expect(
-      display('0', '.', '0', '0', '0', ...'123456789012345'.split('')),
+      display(
+        '0',
+        '.',
+        '0',
+        '0',
+        '0',
+        ...'123456789012345'.split(''),
+      ),
     ).toBe('0.000123456789012345');
   });
 });
@@ -341,7 +353,12 @@ describe('bounded result formatting', () => {
   it('keeps a large product readable via exponential notation', () => {
     // 99999999 x 99999999 = 9999999800000001, formatted to 12 sig figs.
     expect(
-      display(...'99999999'.split(''), 'x', ...'99999999'.split(''), '='),
+      display(
+        ...'99999999'.split(''),
+        'x',
+        ...'99999999'.split(''),
+        '=',
+      ),
     ).toBe('9.9999998e+15');
   });
 
@@ -360,7 +377,9 @@ describe('bounded result formatting', () => {
 
   it('keeps mid-range values as plain fixed strings', () => {
     expect(display('7', '+', '8', '=')).toBe('15');
-    expect(display('0', '.', '1', '+', '0', '.', '2', '=')).toBe('0.3');
+    expect(display('0', '.', '1', '+', '0', '.', '2', '=')).toBe(
+      '0.3',
+    );
   });
 });
 
