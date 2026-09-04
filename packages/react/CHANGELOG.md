@@ -1,5 +1,12 @@
 # @examind/calculator-react
 
+## 1.1.2
+
+### Patch Changes
+
+- Updated dependencies [b269869]
+  - @examind/calculator-core@1.1.2
+
 ## 1.1.1
 
 ### Patch Changes
