@@ -244,3 +244,55 @@ describe('basicEvaluator.paste', () => {
     expect(() => paste(text)).toThrow('Error');
   });
 });
+
+describe('basicEvaluator - additive residue below the guard band is zero', () => {
+  it('1 / 3 x 3 - 1 = 0, not -1e-40', () => {
+    expect(evaluate(vs(1, 3, 3, 1), ['/', 'x', '-'])).toBe('0');
+  });
+
+  it('sqrt 2 squared minus 2 = 0, not 1e-39', () => {
+    const root = basicEvaluator.applyUnary('sqrt', v(2));
+    const square = basicEvaluator.applyUnary('square', root);
+    expect(evaluate([square, v(2)], ['-'])).toBe('0');
+  });
+
+  it('a 40-digit residue added to a value vanishes: 1 + 1e-40 - 1 = 0', () => {
+    expect(evaluate(vs(1, '1e-40', 1), ['+', '-'])).toBe('0');
+  });
+
+  it('keeps every genuine small difference', () => {
+    expect(evaluate(vs('1.00000000000001', 1), ['-'])).toBe(
+      '0.00000000000001',
+    );
+    // 1e-30 relative: well inside the data, far above the guard band.
+    expect(evaluate(vs('1', '0.' + '9'.repeat(30)), ['-'])).toBe(
+      '0.' + '0'.repeat(29) + '1',
+    );
+    // A tiny value on its own is not a residue - nothing to be relative to.
+    expect(evaluate(vs('1e-38', '2e-38'), ['+'])).toBe(
+      '0.' + '0'.repeat(37) + '3',
+    );
+    expect(evaluate(vs('1e-38', 0), ['-'])).toBe(
+      '0.' + '0'.repeat(37) + '1',
+    );
+  });
+
+  it('cuts exactly at 10^-35 relative to the larger operand', () => {
+    expect(evaluate(vs('1', '0.' + '9'.repeat(34)), ['-'])).toBe(
+      '0.' + '0'.repeat(33) + '1',
+    );
+    expect(evaluate(vs('1', '0.' + '9'.repeat(35)), ['-'])).toBe(
+      '0.' + '0'.repeat(34) + '1',
+    );
+    expect(evaluate(vs('1', '0.' + '9'.repeat(36)), ['-'])).toBe('0');
+  });
+
+  it('does not touch multiplication or division', () => {
+    expect(evaluate(vs('1e-20', '1e-20'), ['x'])).toBe(
+      '0.' + '0'.repeat(39) + '1',
+    );
+    expect(evaluate(vs('1e-20', '1e20'), ['/'])).toBe(
+      '0.' + '0'.repeat(39) + '1',
+    );
+  });
+});

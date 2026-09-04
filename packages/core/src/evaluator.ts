@@ -14,6 +14,7 @@ import {
   Decimal,
   D,
   Value,
+  WORKING_PRECISION,
   fromDecimal,
   parseValue,
   toDecimal,
@@ -70,6 +71,32 @@ const format = (value: Value): string => {
 
 // --- Arithmetic ---
 
+// Guard band: the last GUARD_DIGITS of a WORKING_PRECISION intermediate are
+// rounding noise, not data. When an addition or subtraction cancels down to
+// that band - 1 / 3 x 3 - 1, or sqrt(2) squared minus 2 - the true answer is
+// 0 and the residue (about 1e-40 here) would otherwise be displayed, since
+// exponential notation shows however small a value is. Any real difference
+// between values that started as 15-digit entries is at least 1e-15 relative,
+// twenty orders of magnitude above the cut, so no genuine result is lost.
+// This is what physical and OS calculators do implicitly with fewer guard
+// digits.
+const GUARD_DIGITS = 5;
+const RESIDUE_RATIO = new D(10).pow(
+  -(WORKING_PRECISION - GUARD_DIGITS),
+);
+
+const snapResidue = (
+  result: Decimal,
+  a: Decimal,
+  b: Decimal,
+): Decimal => {
+  if (result.isZero()) return result;
+  const scale = a.abs().gte(b.abs()) ? a.abs() : b.abs();
+  return result.abs().lt(scale.times(RESIDUE_RATIO))
+    ? new D(0)
+    : result;
+};
+
 const applyBinary = (
   operator: BinaryOperator,
   a: Decimal,
@@ -77,9 +104,9 @@ const applyBinary = (
 ): Decimal => {
   switch (operator) {
     case '+':
-      return a.plus(b);
+      return snapResidue(a.plus(b), a, b);
     case '-':
-      return a.minus(b);
+      return snapResidue(a.minus(b), a, b);
     case 'x':
       return a.times(b);
     case '/':
