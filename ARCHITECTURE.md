@@ -63,6 +63,12 @@ clone at 40 significant digits, round half up, isolated from any host
 configuration. `basicEvaluator` parses `Value` -> `Decimal`, computes, and
 serialises back. Swapping the library means editing that one file and its tests.
 
+Addition and subtraction snap a result to 0 when it is below 10^-35 of the
+larger operand: the last five of the 40 digits are guard digits, and a result
+that small can only be rounding residue (`1 / 3 x 3 - 1`, or `sqrt 2` squared
+minus 2). Genuine differences between 15-digit entries are at least 10^-15
+relative, so nothing real is lost.
+
 The state machine holds two things for the current register: `entry`, the
 string being typed or the 15-digit rounded view of a result, and `value`, the
 exact result when there is one. Every follow-on operation consumes `value`, so
