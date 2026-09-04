@@ -663,3 +663,45 @@ describe('paste', () => {
     expect(clearMode('paste:3')).toBe('C');
   });
 });
+
+describe('rounding residue never reaches the display', () => {
+  it('1 / 3 = x 3 = - 1 = -> 0', () => {
+    expect(
+      display('1', '/', '3', '=', 'x', '3', '=', '-', '1', '='),
+    ).toBe('0');
+  });
+
+  it('2 sqrt x^2 - 2 = -> 0', () => {
+    expect(display('2', 'sqrt', 'x^2', '-', '2', '=')).toBe('0');
+  });
+
+  it('1 / 3 x 3 - 1 = in one expression -> 0', () => {
+    expect(display('1', '/', '3', 'x', '3', '-', '1', '=')).toBe('0');
+  });
+
+  it('a real 1e-14 difference is still shown', () => {
+    expect(
+      display(
+        '1',
+        '.',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '0',
+        '1',
+        '-',
+        '1',
+        '=',
+      ),
+    ).toBe('1e-14');
+  });
+});
