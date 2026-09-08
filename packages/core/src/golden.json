@@ -1186,7 +1186,7 @@
       ]
     },
     {
-      "title": "overflow",
+      "title": "overflow and underflow",
       "rows": [
         {
           "keys": "9 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
@@ -1195,6 +1195,21 @@
         },
         {
           "keys": "9 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "0 . 1 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
+          "display": "1e-4503599627370496",
+          "expression": "1e-4503599627370496"
+        },
+        {
+          "keys": "0 . 1 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 . 1 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 1/x",
           "display": "Error",
           "expression": ""
         }

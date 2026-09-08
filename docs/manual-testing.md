@@ -3,8 +3,9 @@
 This is the hand-run checklist for the calculator. It has two parts:
 
 1. **Host checks**, written by hand. These need a person in the real host
-   (the EXAMIND assessment room, the demo page, a tablet), because they are
-   about focus, clipboard, layout and theme, which no unit test can see.
+   application (the page or panel the calculator is embedded in, the demo
+   page, a tablet), because they are about focus, clipboard, layout and
+   theme, which no unit test can see.
 2. **Engine checks**, generated from `packages/core/src/golden.json`. Every
    row is asserted by the test suite on each commit, so the expected values
    here are exactly what the engine produces. Do not edit that part by hand:
@@ -23,8 +24,8 @@ Conventions used below:
 
 ## Host checks
 
-Do these in the real host, in every browser students use, and once on a
-tablet if the exam supports one.
+Do these in the real host application, in every browser its users have, and
+once on a tablet if it supports one.
 
 ### Focus and keyboard
 
@@ -62,7 +63,7 @@ tablet if the exam supports one.
 
 ## Engine checks
 
-Generated from the golden table. 217 rows in 23 groups.
+Generated from the golden table. 220 rows in 23 groups.
 
 ### Entry and editing
 
@@ -389,9 +390,12 @@ Generated from the golden table. 217 rows in 23 groups.
 | `0 %` | `0` | `0` |
 | `5 − 5 = ±` | `0` | `0` |
 
-### Overflow
+### Overflow and underflow
 
 | Keys | Display | Expression line |
 | --- | --- | --- |
 | `9 x² (53 times)` | `1.08199600795e+8595052419864061` | `1.08199600795e+8595052419864061` |
 | `9 x² (54 times)` | `Error` | `(blank)` |
+| `0.1 x² (52 times)` | `1e-4503599627370496` | `1e-4503599627370496` |
+| `0.1 x² (53 times)` | `0` | `0` |
+| `0.1 x² (53 times) 1/x` | `Error` | `(blank)` |
