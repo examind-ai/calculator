@@ -98,8 +98,9 @@ const preamble = `# Manual testing
 This is the hand-run checklist for the calculator. It has two parts:
 
 1. **Host checks**, written by hand. These need a person in the real host
-   (the EXAMIND assessment room, the demo page, a tablet), because they are
-   about focus, clipboard, layout and theme, which no unit test can see.
+   application (the page or panel the calculator is embedded in, the demo
+   page, a tablet), because they are about focus, clipboard, layout and
+   theme, which no unit test can see.
 2. **Engine checks**, generated from \`packages/core/src/golden.json\`. Every
    row is asserted by the test suite on each commit, so the expected values
    here are exactly what the engine produces. Do not edit that part by hand:
@@ -118,8 +119,8 @@ Conventions used below:
 
 ## Host checks
 
-Do these in the real host, in every browser students use, and once on a
-tablet if the exam supports one.
+Do these in the real host application, in every browser its users have, and
+once on a tablet if it supports one.
 
 ### Focus and keyboard
 

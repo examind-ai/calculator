@@ -12,7 +12,7 @@ import {
   useCalculator,
 } from '@examind/calculator-react';
 
-// The skin: an EXAMIND-themed (MUI, light + dark) button grid over the
+// The skin: a host-themed (MUI, light + dark) button grid over the
 // headless engine (@examind/calculator-core via @examind/calculator-react).
 // Styling uses theme palette tokens only, so dark mode falls out of the host
 // theme with no hardcoded colors. Modes swap the evaluator; this grid

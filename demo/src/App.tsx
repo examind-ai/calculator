@@ -39,7 +39,7 @@ const Section = ({
 
 // The skin renders no surface of its own, so the host decides what it sits on.
 // Here that's a raised card; embedded in a page section it might be nothing at
-// all, and in EXAMIND it's a draggable panel that owns the elevation.
+// all, and in a host app it might be a draggable panel that owns the elevation.
 const CalculatorCard = () => (
   <Paper
     elevation={3}
