@@ -5,11 +5,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
   {
-    ignores: [
-      '**/dist/**',
-      '**/node_modules/**',
-      'demo/dist/**',
-    ],
+    ignores: ['**/dist/**', '**/node_modules/**', 'demo/dist/**'],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
@@ -22,6 +18,11 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
     },
+  },
+  {
+    // Repo scripts run under Node.
+    files: ['scripts/**/*.mjs'],
+    languageOptions: { globals: { ...globals.node } },
   },
   {
     files: ['**/*.test.{ts,tsx}'],
