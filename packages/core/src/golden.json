@@ -1,0 +1,1204 @@
+{
+  "groups": [
+    {
+      "title": "entry and editing",
+      "rows": [
+        {
+          "keys": "",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 0 7",
+          "display": "7",
+          "expression": "7"
+        },
+        {
+          "keys": "1 . 5 . 5",
+          "display": "1.55",
+          "expression": "1.55"
+        },
+        {
+          "keys": ". 5",
+          "display": "0.5",
+          "expression": "0.5"
+        },
+        {
+          "keys": "1 2 3 back",
+          "display": "12",
+          "expression": "12"
+        },
+        {
+          "keys": "1 back",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "1 back back",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "5 +/- back",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7",
+          "display": "123456789012345",
+          "expression": "123456789012345"
+        }
+      ]
+    },
+    {
+      "title": "arithmetic and precedence",
+      "rows": [
+        {
+          "keys": "7 + 8 =",
+          "display": "15",
+          "expression": "7 + 8 ="
+        },
+        {
+          "keys": "7 + 8",
+          "display": "8",
+          "expression": "7 + 8"
+        },
+        {
+          "keys": "7 +",
+          "display": "7",
+          "expression": "7 +"
+        },
+        {
+          "keys": "2 + 3 x 4 =",
+          "display": "14",
+          "expression": "2 + 3 × 4 ="
+        },
+        {
+          "keys": "2 x 3 + 4 =",
+          "display": "10",
+          "expression": "2 × 3 + 4 ="
+        },
+        {
+          "keys": "1 0 - 2 - 3 =",
+          "display": "5",
+          "expression": "10 − 2 − 3 ="
+        },
+        {
+          "keys": "1 0 / 2 / 5 =",
+          "display": "1",
+          "expression": "10 ÷ 2 ÷ 5 ="
+        },
+        {
+          "keys": "1 2 - 2 x 3 =",
+          "display": "6",
+          "expression": "12 − 2 × 3 ="
+        },
+        {
+          "keys": "0 . 1 + 0 . 2 =",
+          "display": "0.3",
+          "expression": "0.1 + 0.2 ="
+        },
+        {
+          "keys": "1 / 3 =",
+          "display": "0.333333333333333",
+          "expression": "1 ÷ 3 ="
+        },
+        {
+          "keys": "2 / 3 =",
+          "display": "0.666666666666667",
+          "expression": "2 ÷ 3 ="
+        },
+        {
+          "keys": "1 / 3 = x 3 =",
+          "display": "1",
+          "expression": "0.333333333333333 × 3 ="
+        },
+        {
+          "keys": "1 / 3 = x 3 = - 1 =",
+          "display": "0",
+          "expression": "1 − 1 ="
+        },
+        {
+          "keys": "2 sqrt x^2 - 2 =",
+          "display": "0",
+          "expression": "2 − 2 ="
+        },
+        {
+          "keys": "1 / 7 x 7 - 1 =",
+          "display": "0",
+          "expression": "1 ÷ 7 × 7 − 1 ="
+        },
+        {
+          "keys": "9 9 9 9 9 9 9 9 x 9 9 9 9 9 9 9 9 =",
+          "display": "9.9999998e+15",
+          "expression": "99999999 × 99999999 ="
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 x 1 2 3 4 5 6 7 =",
+          "display": "1524155677489",
+          "expression": "1234567 × 1234567 ="
+        },
+        {
+          "keys": "5 x 0 . 0 0 0 0 0 1 =",
+          "display": "0.000005",
+          "expression": "5 × 0.000001 ="
+        },
+        {
+          "keys": "5 x 0 . 0 0 0 0 0 0 1 =",
+          "display": "5e-7",
+          "expression": "5 × 1e-7 ="
+        },
+        {
+          "keys": "5 . +",
+          "display": "5",
+          "expression": "5 +"
+        },
+        {
+          "keys": "5 . + 2 =",
+          "display": "7",
+          "expression": "5 + 2 ="
+        },
+        {
+          "keys": "1 / 8 0 0 0 0 0 0 0 =",
+          "display": "1.25e-8",
+          "expression": "1 ÷ 80000000 ="
+        },
+        {
+          "keys": "5 . =",
+          "display": "5",
+          "expression": "5 ="
+        },
+        {
+          "keys": "0 . =",
+          "display": "0",
+          "expression": "0 ="
+        },
+        {
+          "keys": "5 +/- =",
+          "display": "-5",
+          "expression": "-5 ="
+        },
+        {
+          "keys": "- 5 =",
+          "display": "-5",
+          "expression": "0 − 5 ="
+        }
+      ]
+    },
+    {
+      "title": "operator swap and bare equals",
+      "rows": [
+        {
+          "keys": "2 + x 3 =",
+          "display": "6",
+          "expression": "2 × 3 ="
+        },
+        {
+          "keys": "2 + - 3 =",
+          "display": "-1",
+          "expression": "2 − 3 ="
+        },
+        {
+          "keys": "9 =",
+          "display": "9",
+          "expression": "9 ="
+        },
+        {
+          "keys": "9 = =",
+          "display": "9",
+          "expression": "9 ="
+        },
+        {
+          "keys": "5 + =",
+          "display": "10",
+          "expression": "5 + 5 ="
+        },
+        {
+          "keys": "5 x =",
+          "display": "25",
+          "expression": "5 × 5 ="
+        }
+      ]
+    },
+    {
+      "title": "repeated equals",
+      "rows": [
+        {
+          "keys": "9 x 6 =",
+          "display": "54",
+          "expression": "9 × 6 ="
+        },
+        {
+          "keys": "9 x 6 = =",
+          "display": "324",
+          "expression": "54 × 6 ="
+        },
+        {
+          "keys": "9 x 6 = = =",
+          "display": "1944",
+          "expression": "324 × 6 ="
+        },
+        {
+          "keys": "7 + 8 = =",
+          "display": "23",
+          "expression": "15 + 8 ="
+        },
+        {
+          "keys": "1 0 - 3 = =",
+          "display": "4",
+          "expression": "7 − 3 ="
+        },
+        {
+          "keys": "1 0 0 / 1 0 = =",
+          "display": "1",
+          "expression": "10 ÷ 10 ="
+        },
+        {
+          "keys": "9 x 6 = sqrt =",
+          "display": "7.34846922834953",
+          "expression": "7.34846922834953 ="
+        },
+        {
+          "keys": "7 + 8 = +/- =",
+          "display": "-15",
+          "expression": "-15 ="
+        }
+      ]
+    },
+    {
+      "title": "continuing from a result",
+      "rows": [
+        {
+          "keys": "7 + 8 = x 2 =",
+          "display": "30",
+          "expression": "15 × 2 ="
+        },
+        {
+          "keys": "7 + 8 = 2 x 3 =",
+          "display": "6",
+          "expression": "2 × 3 ="
+        },
+        {
+          "keys": "7 + 8 = . 5 =",
+          "display": "0.5",
+          "expression": "0.5 ="
+        },
+        {
+          "keys": "7 + 8 = sqrt",
+          "display": "3.87298334620742",
+          "expression": "3.87298334620742"
+        },
+        {
+          "keys": "7 + 8 = x^2",
+          "display": "225",
+          "expression": "225"
+        }
+      ]
+    },
+    {
+      "title": "percent",
+      "rows": [
+        {
+          "keys": "5 0 %",
+          "display": "0.5",
+          "expression": "0.5"
+        },
+        {
+          "keys": "2 0 0 + 1 0 %",
+          "display": "20",
+          "expression": "200 + 20"
+        },
+        {
+          "keys": "2 0 0 + 1 0 % =",
+          "display": "220",
+          "expression": "200 + 20 ="
+        },
+        {
+          "keys": "2 0 0 - 1 0 % =",
+          "display": "180",
+          "expression": "200 − 20 ="
+        },
+        {
+          "keys": "2 0 0 x 1 0 % =",
+          "display": "4000",
+          "expression": "200 × 20 ="
+        },
+        {
+          "keys": "2 0 0 / 1 0 % =",
+          "display": "10",
+          "expression": "200 ÷ 20 ="
+        },
+        {
+          "keys": "7 + 8 = %",
+          "display": "0.15",
+          "expression": "0.15"
+        },
+        {
+          "keys": "5 0 % %",
+          "display": "0.005",
+          "expression": "0.005"
+        }
+      ]
+    },
+    {
+      "title": "unary operators",
+      "rows": [
+        {
+          "keys": "9 sqrt",
+          "display": "3",
+          "expression": "3"
+        },
+        {
+          "keys": "2 sqrt",
+          "display": "1.4142135623731",
+          "expression": "1.4142135623731"
+        },
+        {
+          "keys": "5 x^2",
+          "display": "25",
+          "expression": "25"
+        },
+        {
+          "keys": "4 1/x",
+          "display": "0.25",
+          "expression": "0.25"
+        },
+        {
+          "keys": "3 1/x 1/x",
+          "display": "3",
+          "expression": "3"
+        },
+        {
+          "keys": "5 + 9 sqrt =",
+          "display": "8",
+          "expression": "5 + 3 ="
+        },
+        {
+          "keys": "5 + 9 sqrt + 2 =",
+          "display": "10",
+          "expression": "5 + 3 + 2 ="
+        },
+        {
+          "keys": "2 sqrt x^2",
+          "display": "2",
+          "expression": "2"
+        },
+        {
+          "keys": "1 . 5 x^2",
+          "display": "2.25",
+          "expression": "2.25"
+        },
+        {
+          "keys": "0 . 1 x^2",
+          "display": "0.01",
+          "expression": "0.01"
+        }
+      ]
+    },
+    {
+      "title": "negate",
+      "rows": [
+        {
+          "keys": "5 +/-",
+          "display": "-5",
+          "expression": "-5"
+        },
+        {
+          "keys": "5 +/- +/-",
+          "display": "5",
+          "expression": "5"
+        },
+        {
+          "keys": "0 +/-",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "5 + +/-",
+          "display": "5",
+          "expression": "5 +"
+        },
+        {
+          "keys": "5 + +/- 3 =",
+          "display": "8",
+          "expression": "5 + 3 ="
+        },
+        {
+          "keys": "5 + 3 +/- =",
+          "display": "2",
+          "expression": "5 + -3 ="
+        },
+        {
+          "keys": "9 x 6 = +/-",
+          "display": "-54",
+          "expression": "-54"
+        },
+        {
+          "keys": "9 x 6 = +/- x 2 =",
+          "display": "-108",
+          "expression": "-54 × 2 ="
+        },
+        {
+          "keys": "0 . 5 +/- back back 3",
+          "display": "-3",
+          "expression": "-3"
+        }
+      ]
+    },
+    {
+      "title": "clear entry vs clear all",
+      "rows": [
+        {
+          "keys": "5 x 7 CE",
+          "display": "0",
+          "expression": "5 ×"
+        },
+        {
+          "keys": "5 x 7 CE 8 =",
+          "display": "40",
+          "expression": "5 × 8 ="
+        },
+        {
+          "keys": "5 x 7 C",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "7 + 8 = CE",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "7 + 8 = CE 2 =",
+          "display": "2",
+          "expression": "2 ="
+        },
+        {
+          "keys": "7 + 8 = C 2 =",
+          "display": "2",
+          "expression": "2 ="
+        },
+        {
+          "keys": "5 CE 3",
+          "display": "3",
+          "expression": "3"
+        }
+      ]
+    },
+    {
+      "title": "paste",
+      "rows": [
+        {
+          "keys": "paste:1,234.5",
+          "display": "1234.5",
+          "expression": "1234.5"
+        },
+        {
+          "keys": "paste:1,234.5 + 1 =",
+          "display": "1235.5",
+          "expression": "1234.5 + 1 ="
+        },
+        {
+          "keys": "5 + paste:3 =",
+          "display": "8",
+          "expression": "5 + 3 ="
+        },
+        {
+          "keys": "7 + 8 = paste:2 x 3 =",
+          "display": "6",
+          "expression": "2 × 3 ="
+        },
+        {
+          "keys": "paste:3.14159265358979323846",
+          "display": "3.14159265358979",
+          "expression": "3.14159265358979"
+        },
+        {
+          "keys": "paste:1e-7",
+          "display": "1e-7",
+          "expression": "1e-7"
+        },
+        {
+          "keys": "paste:$2,000 x 1 . 5 =",
+          "display": "3000",
+          "expression": "2000 × 1.5 ="
+        },
+        {
+          "keys": "paste:-3 x^2",
+          "display": "9",
+          "expression": "9"
+        },
+        {
+          "keys": "paste:12 3",
+          "display": "3",
+          "expression": "3"
+        },
+        {
+          "keys": "paste:abc",
+          "display": "Invalid input",
+          "expression": "0"
+        },
+        {
+          "keys": "5 paste:abc",
+          "display": "Invalid input",
+          "expression": "0"
+        },
+        {
+          "keys": "5 + paste:abc",
+          "display": "Invalid input",
+          "expression": "5 +"
+        },
+        {
+          "keys": "5 + paste:abc 3 =",
+          "display": "8",
+          "expression": "5 + 3 ="
+        },
+        {
+          "keys": "5 + paste:abc x",
+          "display": "Invalid input",
+          "expression": "5 +"
+        },
+        {
+          "keys": "7 paste:abc x 3 =",
+          "display": "3",
+          "expression": "3 ="
+        },
+        {
+          "keys": "paste:abc 7",
+          "display": "7",
+          "expression": "7"
+        },
+        {
+          "keys": "paste:abc paste:5",
+          "display": "5",
+          "expression": "5"
+        },
+        {
+          "keys": "paste:abc C",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "7 + 8 = paste:abc",
+          "display": "Invalid input",
+          "expression": "0"
+        },
+        {
+          "keys": "5 / 0 = paste:3",
+          "display": "Error",
+          "expression": ""
+        }
+      ]
+    },
+    {
+      "title": "errors and recovery",
+      "rows": [
+        {
+          "keys": "5 / 0 =",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "5 / 0 = 7",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "5 / 0 = +",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "5 / 0 = C",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "5 / 0 = C 7",
+          "display": "7",
+          "expression": "7"
+        },
+        {
+          "keys": "5 / 0 = CE",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 1/x",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "4 +/- sqrt",
+          "display": "Error",
+          "expression": ""
+        },
+        {
+          "keys": "4 +/- sqrt C 4 sqrt",
+          "display": "2",
+          "expression": "2"
+        },
+        {
+          "keys": "5 + 0 1/x",
+          "display": "Error",
+          "expression": ""
+        }
+      ]
+    },
+    {
+      "title": "rounding at the 15th digit",
+      "rows": [
+        {
+          "keys": "1 / 6 =",
+          "display": "0.166666666666667",
+          "expression": "1 ÷ 6 ="
+        },
+        {
+          "keys": "5 / 9 =",
+          "display": "0.555555555555556",
+          "expression": "5 ÷ 9 ="
+        },
+        {
+          "keys": "1 / 7 =",
+          "display": "0.142857142857143",
+          "expression": "1 ÷ 7 ="
+        },
+        {
+          "keys": "2 2 / 7 =",
+          "display": "3.14285714285714",
+          "expression": "22 ÷ 7 ="
+        },
+        {
+          "keys": "1 / 3 = + 1 / 3 = + 1 / 3 =",
+          "display": "1",
+          "expression": "0.666666666666667 + 1 ÷ 3 ="
+        },
+        {
+          "keys": "0 . 1 + 0 . 7 =",
+          "display": "0.8",
+          "expression": "0.1 + 0.7 ="
+        },
+        {
+          "keys": "1 - 0 . 9 =",
+          "display": "0.1",
+          "expression": "1 − 0.9 ="
+        },
+        {
+          "keys": "1 . 1 x 1 . 1 =",
+          "display": "1.21",
+          "expression": "1.1 × 1.1 ="
+        }
+      ]
+    },
+    {
+      "title": "cancellation and tiny differences",
+      "rows": [
+        {
+          "keys": "1 0 0 0 0 0 0 - 9 9 9 9 9 9 . 9 9 9 9 9 9 =",
+          "display": "0.000001",
+          "expression": "1000000 − 999999.999999 ="
+        },
+        {
+          "keys": "1 . 0 0 0 0 0 0 0 0 0 0 0 0 0 1 - 1 =",
+          "display": "1e-14",
+          "expression": "1.00000000000001 − 1 ="
+        },
+        {
+          "keys": "0 . 3 - 0 . 1 - 0 . 1 - 0 . 1 =",
+          "display": "0",
+          "expression": "0.3 − 0.1 − 0.1 − 0.1 ="
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 - 1 2 3 4 5 6 7 8 9 0 1 2 3 4 4 =",
+          "display": "1",
+          "expression": "123456789012345 − 123456789012344 ="
+        },
+        {
+          "keys": "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 + 1 =",
+          "display": "1e+15",
+          "expression": "999999999999999 + 1 ="
+        },
+        {
+          "keys": "1 / 7 x 7 - 1 =",
+          "display": "0",
+          "expression": "1 ÷ 7 × 7 − 1 ="
+        },
+        {
+          "keys": "0 . 1 x 3 - 0 . 3 =",
+          "display": "0",
+          "expression": "0.1 × 3 − 0.3 ="
+        },
+        {
+          "keys": "1 / 3 = x 3 = - 1 =",
+          "display": "0",
+          "expression": "1 − 1 ="
+        },
+        {
+          "keys": "2 sqrt x^2 - 2 =",
+          "display": "0",
+          "expression": "2 − 2 ="
+        },
+        {
+          "keys": "3 sqrt x^2 - 3 =",
+          "display": "0",
+          "expression": "3 − 3 ="
+        }
+      ]
+    },
+    {
+      "title": "exponent boundaries",
+      "rows": [
+        {
+          "keys": "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 x 1 0 =",
+          "display": "1e+15",
+          "expression": "100000000000000 × 10 ="
+        },
+        {
+          "keys": "0 . 0 0 0 0 0 1 x 1 =",
+          "display": "0.000001",
+          "expression": "0.000001 × 1 ="
+        },
+        {
+          "keys": "0 . 0 0 0 0 0 1 / 1 0 =",
+          "display": "1e-7",
+          "expression": "0.000001 ÷ 10 ="
+        },
+        {
+          "keys": "1 / 1 0 0 0 0 0 0 =",
+          "display": "0.000001",
+          "expression": "1 ÷ 1000000 ="
+        },
+        {
+          "keys": "1 / 1 0 0 0 0 0 0 0 =",
+          "display": "1e-7",
+          "expression": "1 ÷ 10000000 ="
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 x 1 0 =",
+          "display": "1.23456789012345e+15",
+          "expression": "123456789012345 × 10 ="
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 x 1 0 = / 1 0 =",
+          "display": "123456789012345",
+          "expression": "1.23456789012345e+15 ÷ 10 ="
+        },
+        {
+          "keys": "1 / 3 = x 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 =",
+          "display": "33333333333333.3",
+          "expression": "0.333333333333333 × 100000000000000 ="
+        },
+        {
+          "keys": "9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 x 9 9 9 9 9 9 9 9 9 9 9 9 9 9 9 =",
+          "display": "9.99999999999998e+29",
+          "expression": "999999999999999 × 999999999999999 ="
+        }
+      ]
+    },
+    {
+      "title": "chained unary",
+      "rows": [
+        {
+          "keys": "2 sqrt sqrt x^2 x^2",
+          "display": "2",
+          "expression": "2"
+        },
+        {
+          "keys": "1 0 1/x 1/x 1/x 1/x",
+          "display": "10",
+          "expression": "10"
+        },
+        {
+          "keys": "3 x^2 sqrt",
+          "display": "3",
+          "expression": "3"
+        },
+        {
+          "keys": "0 . 5 1/x x^2",
+          "display": "4",
+          "expression": "4"
+        },
+        {
+          "keys": "7 sqrt x^2 sqrt x^2",
+          "display": "7",
+          "expression": "7"
+        },
+        {
+          "keys": "1 6 sqrt x^2 1/x",
+          "display": "0.0625",
+          "expression": "0.0625"
+        },
+        {
+          "keys": "0 . 0 0 0 1 sqrt",
+          "display": "0.01",
+          "expression": "0.01"
+        },
+        {
+          "keys": "1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 sqrt",
+          "display": "10000000",
+          "expression": "10000000"
+        }
+      ]
+    },
+    {
+      "title": "negatives and precedence",
+      "rows": [
+        {
+          "keys": "5 +/- x 3 +/- =",
+          "display": "15",
+          "expression": "-5 × -3 ="
+        },
+        {
+          "keys": "2 - 3 +/- x 4 =",
+          "display": "14",
+          "expression": "2 − -3 × 4 ="
+        },
+        {
+          "keys": "2 +/- x^2",
+          "display": "4",
+          "expression": "4"
+        },
+        {
+          "keys": "2 +/- x^2 sqrt",
+          "display": "2",
+          "expression": "2"
+        },
+        {
+          "keys": "0 - 5 = x^2",
+          "display": "25",
+          "expression": "25"
+        },
+        {
+          "keys": "1 0 - 2 x 3 - 4 / 2 =",
+          "display": "2",
+          "expression": "10 − 2 × 3 − 4 ÷ 2 ="
+        },
+        {
+          "keys": "2 x 3 +/- + 4 x 5 +/- =",
+          "display": "-26",
+          "expression": "2 × -3 + 4 × -5 ="
+        },
+        {
+          "keys": "1 / 3 +/- = x 3 +/- =",
+          "display": "1",
+          "expression": "-0.333333333333333 × -3 ="
+        }
+      ]
+    },
+    {
+      "title": "percent chains",
+      "rows": [
+        {
+          "keys": "1 0 0 + 5 0 % =",
+          "display": "150",
+          "expression": "100 + 50 ="
+        },
+        {
+          "keys": "1 0 0 + 5 0 % + 5 0 % =",
+          "display": "175",
+          "expression": "100 + 50 + 25 ="
+        },
+        {
+          "keys": "2 0 0 x 1 0 % x 2 =",
+          "display": "8000",
+          "expression": "200 × 20 × 2 ="
+        },
+        {
+          "keys": "1 0 0 - 1 0 0 % =",
+          "display": "0",
+          "expression": "100 − 100 ="
+        },
+        {
+          "keys": "0 . 5 %",
+          "display": "0.005",
+          "expression": "0.005"
+        },
+        {
+          "keys": "1 0 0 + 1 / 3 % =",
+          "display": "133.333333333333",
+          "expression": "100 + 1 ÷ 0.03 ="
+        },
+        {
+          "keys": "8 0 0 / 2 0 % =",
+          "display": "5",
+          "expression": "800 ÷ 160 ="
+        },
+        {
+          "keys": "2 0 0 + 1 0 % + 5 =",
+          "display": "225",
+          "expression": "200 + 20 + 5 ="
+        }
+      ]
+    },
+    {
+      "title": "repeated equals with division and negatives",
+      "rows": [
+        {
+          "keys": "1 0 0 / 1 0 = = =",
+          "display": "0.1",
+          "expression": "1 ÷ 10 ="
+        },
+        {
+          "keys": "1 / 1 0 = = =",
+          "display": "0.001",
+          "expression": "0.01 ÷ 10 ="
+        },
+        {
+          "keys": "8 / 2 +/- = =",
+          "display": "2",
+          "expression": "-4 ÷ -2 ="
+        },
+        {
+          "keys": "2 x 3 = = = = =",
+          "display": "486",
+          "expression": "162 × 3 ="
+        },
+        {
+          "keys": "1 0 0 0 - 1 = = =",
+          "display": "997",
+          "expression": "998 − 1 ="
+        },
+        {
+          "keys": "1 / 3 = = =",
+          "display": "0.037037037037037",
+          "expression": "0.111111111111111 ÷ 3 ="
+        },
+        {
+          "keys": "5 x 5 = sqrt = =",
+          "display": "5",
+          "expression": "5 ="
+        }
+      ]
+    },
+    {
+      "title": "entry cap and editing",
+      "rows": [
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9",
+          "display": "123456789012345",
+          "expression": "123456789012345"
+        },
+        {
+          "keys": "0 . 0 0 0 0 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6",
+          "display": "0.00000123456789012345",
+          "expression": "0.00000123456789012345"
+        },
+        {
+          "keys": "1 2 3 . 4 5 back back back",
+          "display": "123",
+          "expression": "123"
+        },
+        {
+          "keys": "1 2 3 . 4 5 back back back back back",
+          "display": "1",
+          "expression": "1"
+        },
+        {
+          "keys": "1 2 3 . 4 5 back back back back back back",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": ". . 5 . 5",
+          "display": "0.55",
+          "expression": "0.55"
+        },
+        {
+          "keys": "0 0 0 . 5",
+          "display": "0.5",
+          "expression": "0.5"
+        },
+        {
+          "keys": "5 +/- back back 3",
+          "display": "3",
+          "expression": "3"
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 . 6 7",
+          "display": "123456789012345.",
+          "expression": "123456789012345."
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 back back 9 9",
+          "display": "123456789012399",
+          "expression": "123456789012399"
+        }
+      ]
+    },
+    {
+      "title": "digit grouping",
+      "rows": [
+        {
+          "keys": "1 2 3 4 5 6 7",
+          "display": "1234567",
+          "expression": "1234567"
+        },
+        {
+          "keys": "1 2 3 4 . 5 0",
+          "display": "1234.50",
+          "expression": "1234.50"
+        },
+        {
+          "keys": "1 2 3 4 .",
+          "display": "1234.",
+          "expression": "1234."
+        },
+        {
+          "keys": "1 2 3 4 +/- + 1 0 0 0 =",
+          "display": "-234",
+          "expression": "-1234 + 1000 ="
+        },
+        {
+          "keys": "1 2 3 4 5 6 7 8 9 0 1 2 3 4 5",
+          "display": "123456789012345",
+          "expression": "123456789012345"
+        },
+        {
+          "keys": "0 . 1 2 3 4 5 6 7 8 9",
+          "display": "0.123456789",
+          "expression": "0.123456789"
+        }
+      ]
+    },
+    {
+      "title": "paste with arithmetic",
+      "rows": [
+        {
+          "keys": "paste:1e15",
+          "display": "1e+15",
+          "expression": "1e+15"
+        },
+        {
+          "keys": "paste:999999999999999.9",
+          "display": "1e+15",
+          "expression": "1e+15"
+        },
+        {
+          "keys": "paste:0.1 + paste:0.2 =",
+          "display": "0.3",
+          "expression": "0.1 + 0.2 ="
+        },
+        {
+          "keys": "paste:1/3",
+          "display": "Invalid input",
+          "expression": "0"
+        },
+        {
+          "keys": "paste:1,000,000 / 3 =",
+          "display": "333333.333333333",
+          "expression": "1000000 ÷ 3 ="
+        },
+        {
+          "keys": "paste:-0 + 5 =",
+          "display": "5",
+          "expression": "0 + 5 ="
+        },
+        {
+          "keys": "paste:00012.50",
+          "display": "12.5",
+          "expression": "12.5"
+        },
+        {
+          "keys": "paste:1e-6",
+          "display": "0.000001",
+          "expression": "0.000001"
+        },
+        {
+          "keys": "paste:1E-7 x 1 0 =",
+          "display": "0.000001",
+          "expression": "1e-7 × 10 ="
+        },
+        {
+          "keys": "5 + paste:3 x paste:2 =",
+          "display": "11",
+          "expression": "5 + 3 × 2 ="
+        },
+        {
+          "keys": "paste:2 sqrt x^2",
+          "display": "2",
+          "expression": "2"
+        },
+        {
+          "keys": "paste:12345678901234567",
+          "display": "1.23456789012346e+16",
+          "expression": "1.23456789012346e+16"
+        },
+        {
+          "keys": "paste:12345678901234567 / 1 0 0 0 0 0 0 =",
+          "display": "12345678901.2346",
+          "expression": "1.23456789012346e+16 ÷ 1000000 ="
+        }
+      ]
+    },
+    {
+      "title": "zero handling",
+      "rows": [
+        {
+          "keys": "0 x 5 +/- =",
+          "display": "0",
+          "expression": "0 × -5 ="
+        },
+        {
+          "keys": "0 / 5 =",
+          "display": "0",
+          "expression": "0 ÷ 5 ="
+        },
+        {
+          "keys": "5 +/- x 0 =",
+          "display": "0",
+          "expression": "-5 × 0 ="
+        },
+        {
+          "keys": "0 . 0 0 0 =",
+          "display": "0",
+          "expression": "0 ="
+        },
+        {
+          "keys": "0 +/-",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 . 0 +/- 5",
+          "display": "-0.05",
+          "expression": "-0.05"
+        },
+        {
+          "keys": "0 sqrt",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 x^2",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "0 %",
+          "display": "0",
+          "expression": "0"
+        },
+        {
+          "keys": "5 - 5 = +/-",
+          "display": "0",
+          "expression": "0"
+        }
+      ]
+    },
+    {
+      "title": "overflow",
+      "rows": [
+        {
+          "keys": "9 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
+          "display": "1.08199600795e+8595052419864061",
+          "expression": "1.08199600795e+8595052419864061"
+        },
+        {
+          "keys": "9 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2 x^2",
+          "display": "Error",
+          "expression": ""
+        }
+      ]
+    }
+  ]
+}

@@ -14,6 +14,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "docs:manual": "node scripts/manual-testing.mjs",
+    "docs:manual:check": "node scripts/manual-testing.mjs --check",
     "format": "prettier --write \"**/*.{ts,tsx,css,json,md}\"",
     "changeset": "changeset",
     "version-packages": "changeset version",

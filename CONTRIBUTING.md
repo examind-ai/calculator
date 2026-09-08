@@ -16,6 +16,21 @@ pnpm --filter demo dev   # run the demo
 The demo consumes the packages' built `dist`, so rebuild a package after editing
 its source before re-checking the demo.
 
+## Manual test checklist
+
+`docs/manual-testing.md` is generated from the golden keystroke table in
+`packages/core/src/golden.json`. To change the checklist, change the table
+(the test suite asserts every row), then regenerate:
+
+```bash
+pnpm build          # the generator uses core's built helpers
+pnpm docs:manual    # rewrite docs/manual-testing.md
+```
+
+CI fails if the committed document is stale (`pnpm docs:manual:check`). The
+host-only checks at the top of the document (focus, clipboard, layout, theme)
+are hand-written in `scripts/manual-testing.mjs`.
+
 ## Commit convention
 
 This repo uses [Conventional Commits](https://www.conventionalcommits.org/):

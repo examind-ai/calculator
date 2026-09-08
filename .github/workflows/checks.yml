@@ -25,3 +25,5 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm test
       - run: pnpm lint
+      # docs/manual-testing.md is generated from the golden table; fail if stale.
+      - run: pnpm docs:manual:check
